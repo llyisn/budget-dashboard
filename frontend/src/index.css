@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Straw Serif";
+    src: url("./assets/fonts/Straw-Serif.ttf");
+}
+
+:root {
+    font-family: "Straw Serif", sans-serif;
+    color: #3a3a3a;
+    --widget-color: #FDF2F2;
+}
