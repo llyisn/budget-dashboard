@@ -10,3 +10,7 @@
     color: #3a3a3a;
     --widget-color: #FDF2F2;
 }
+
+th, td {
+  font-size: 5cqw;
+}

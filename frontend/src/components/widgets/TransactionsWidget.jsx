@@ -8,12 +8,13 @@ const TransactionsWidget = ({date, price=0}) => {
       flex flex-col overflow-hidden
       @container'>
         {/* header */}
-        <div className='px-[6cqw] pt-[4cqw]'>
+        <div className='px-[6cqw] pt-[4cqw] flex justify-between items-center'>
             <p className='text-[10cqw]'>transactions</p>
+            <p className='text-[9cqw]'>+</p>
         </div>
         {/* history of transactions */}
         <div className='flex-1 px-[6cqw] overflow-y-auto'>
-            <time className='text-[5cqw]' datetime={date}>{date}</time>
+            <time className='text-[5cqw]' dateTime={date}>{date}</time>
             <div className='flex justify-between bg-white px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'>
                 <div className='flex items-center'>
                     <p className='text-[5cqw]'>🍣</p>

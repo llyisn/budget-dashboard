@@ -8,6 +8,8 @@ import ChecklistWidget from '../components/widgets/ChecklistWidget'
 import TransactionsWidget from '../components/widgets/TransactionsWidget'
 import ImageWidget from '../components/widgets/ImageWidget'
 import GoalWidget from '../components/widgets/GoalWidget'
+import BudgetHistory from '../components/widgets/BudgetHistory'
+import TopExpenses from '../components/widgets/TopExpenses'
 
 const Dashboard = () => {
     const gridContainerRef = useRef(null)
@@ -32,8 +34,9 @@ const Dashboard = () => {
             <TextWidget text='ugly consistency beats pretty perfection' />
             <ChecklistWidget />
             <TransactionsWidget date={"23.07.26"} price={192.34} />
-            <ImageWidget />
+            <BudgetHistory data={[{month: "Jul 26", total: 3484, rent:2500, food: null}]} />
             <GoalWidget  valueNow={4305} valueMax={8000}/>
+            <TopExpenses data={{rent: 2739.35, food: 1823.88, transport: 231.66}}/>
         </div>
         
       </div>

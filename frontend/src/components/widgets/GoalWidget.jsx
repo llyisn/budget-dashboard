@@ -32,7 +32,7 @@ const GoalWidget = ({valueNow=0, valueMax=0}) => {
                     </div>
                 </div>
                 {/* extra info */}
-                <div className='flex justify-between text-[6cqh] text-gray-400'>
+                <div className='flex justify-between text-[7cqh] text-gray-600'>
                     <p>${valueMax-valueNow < 0 ?  `${valueNow-valueMax} over` : `${valueMax-valueNow} left`}</p>
                     <p>due: Jun 2027</p>
                 </div>
