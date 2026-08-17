@@ -36,7 +36,7 @@ const Dashboard = () => {
             <TransactionsWidget date={"23.07.26"} price={192.34} />
             <BudgetHistory data={[{month: "Jul 26", total: 3484, rent:2500, food: null}]} />
             <GoalWidget  valueNow={4305} valueMax={8000}/>
-            <TopExpenses data={{rent: 2739.35, food: 1823.88, transport: 231.66}}/>
+            <TopExpenses data={{rent: 439.35, food: 1823.88, transport: 331.66}}/>
         </div>
         
       </div>
