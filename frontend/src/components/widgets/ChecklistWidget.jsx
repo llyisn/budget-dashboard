@@ -1,16 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const ChecklistWidget = () => {
+const ChecklistWidget = ({data = []}) => {
+  const [list, setList] = useState(data)
+
+  function toggleItem(id) {
+    const newList = list.map((item) => {
+      if (item.id === id) {
+        const newItem = {...item, checked: !item.checked}
+        return newItem
+      }
+      else return item
+    })
+
+    setList(newList)
+  }
+
   return (
     <div className='bg-(--widget-color) rounded-md
       row-span-2 col-span-2 row-start-3
       @container
       '>
         <div className='text-[13cqw] p-[10cqw]'>
-            <div className='flex items-center'>
-                <input className='appearance-none peer' id='todo-1' type="checkbox" />
+          {
+            list.map((item) => (
+              <div key={item.id} className='flex items-center'>
+            
+                <input onChange={() => toggleItem(item.id)} checked={item.checked} className='sr-only peer' id={`todo-${item.id}`} type="checkbox" />
 
-                <label htmlFor="todo-1"
+                <label htmlFor={`todo-${item.id}`}
                 className="size-[10cqw] border border-gray-500 rounded-xs mr-[6cqw] cursor-pointer 
                 after:content-['✓']
                 after:text-[8cqw]
@@ -20,8 +37,11 @@ const ChecklistWidget = () => {
                 peer-checked:after:scale-100
                 "
                 />
-                <label className='peer-checked:line-through' htmlFor="todo-1">order tv</label>
+                <label className='peer-checked:line-through' htmlFor={`todo-${item.id}`}>{item.content}</label>
             </div>
+            ))
+          }
+           
         </div>
 
     </div>
@@ -29,3 +49,4 @@ const ChecklistWidget = () => {
 }
 
 export default ChecklistWidget
+

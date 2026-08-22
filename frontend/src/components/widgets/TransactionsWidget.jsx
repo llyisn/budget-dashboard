@@ -18,7 +18,7 @@ const TransactionsWidget = ({date, price=0}) => {
             <div className='flex justify-between bg-white px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'>
                 <div className='flex items-center'>
                     <p className='text-[5cqw]'>🍣</p>
-                    <p className='pl-[3cqw]'>nabi hotpot</p>
+                    <p className='pl-[3cqw]'>hotpot</p>
                 </div>
                 <p>-${price}</p>
             </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 const GAP_RATIO = 5.25;
 
-export function useCellSize(gridContainerRef) {
+const useCellSize = (gridContainerRef) => {
    const [cellSize, setCellSize] = useState(84)
    const [gapSize, setGapSize] = useState(null)
 

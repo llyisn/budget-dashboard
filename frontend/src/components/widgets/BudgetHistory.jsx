@@ -1,10 +1,11 @@
 import React from 'react'
+import { getDisplayRows } from '../../utils/utils'
 
 const MAX_ROWS = 5
 const BORDER = 'border-black'
 
 const BudgetHistory = ({data = []}) => {
-  const rows = getDisplayRows(data, MAX_ROWS)
+  const rows = getDisplayRows(data, MAX_ROWS, {month: null, total: null, rent: null, food: null})
 
   return (
     <div className='bg-(--widget-color) rounded-md 
@@ -54,19 +55,3 @@ const BudgetHistory = ({data = []}) => {
 
 export default BudgetHistory
 
-
-function getDisplayRows(data, maxRows) {
-    const emptyRows = maxRows - data.length
-    let paddedData = []
-    if (emptyRows === 0) {
-        paddedData = data
-    }
-    else if (emptyRows > 0) {
-        paddedData = [...data, ...Array.from({ length: emptyRows}, () => ({month: "", total: null, rent: null, food: null}))]
-    }
-    else {
-        paddedData = data.slice(-5)
-    }
-    
-    return paddedData
-}
