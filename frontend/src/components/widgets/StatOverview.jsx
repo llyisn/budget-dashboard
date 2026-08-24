@@ -68,10 +68,7 @@ const StatOverview = ({title='', data=[]}) => {
                                     if (colIndex === 1) {
                                         return (
                                             <td key={colIndex} className='border'>
-                                                <button className='flex justify-between'>
-                                                    <MiniChart />
-                                                    <span>{value}</span>
-                                                </button>
+                                                <span className='text-right'>{value}</span>
                                             </td>
                                         )
                                     }
