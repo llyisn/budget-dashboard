@@ -1,10 +1,9 @@
 import React, { useRef } from 'react'
 import useCellSize from '../hooks/useCellSize'
 import Header from '../components/Header'
-import TransactionsWidget from '../components/widgets/TransactionsWidget'
-import TransactionList from '../components/widgets/TransactionList'
-import StatOverview from '../components/widgets/StatOverview'
-import MiniChart from '../components/MiniChart'
+import TransactionsWidget from '../components/widgets/transactions/TransactionsWidget'
+import TransactionList from '../components/widgets/transactions/transaction-list/TransactionList'
+import StatOverview from '../components/widgets/stat/StatOverview'
 
 const Transactions = () => {
  const gridContainerRef = useRef(null)

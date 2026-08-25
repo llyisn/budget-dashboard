@@ -1,6 +1,6 @@
 import React from 'react'
-import { getDisplayRows } from '../../utils/utils'
-import MiniChart from '../MiniChart'
+import { getDisplayRows } from '../../../utils/utils'
+
 // not finished
 const MAX_ROWS = 4
 

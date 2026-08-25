@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import fakeTransactions from '../data/fakeData'
 
 const useTransactions = () => {

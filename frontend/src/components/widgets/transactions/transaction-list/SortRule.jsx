@@ -1,23 +1,18 @@
-import { useSortable } from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/react/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { MoveDown, MoveUp } from 'lucide-react'
 import React from 'react'
 
-const SortRule = ({ rule, deleteSortRule, toggleDirection}) => {
-    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: rule.id})
+const SortRule = ({index, rule, deleteSortRule, toggleDirection}) => {
+    const { ref, handleRef} = useSortable({id: rule.id, index})
     
-    const style = {
-        transition,
-        transform: CSS.Transform.toString(transform)
-    }
-
   return (
     <div
-        ref={setNodeRef} {...attributes} style={style}
-        key={rule.field} className='flex items-center justify-between'>
+        ref={ref}
+        className='flex items-center justify-between select-none'>
         
-        <div className='flex items-center bg-pink-50 px-2 mb-1 w-full touch-none'>
-            <span {...listeners} className='cursor-pointer hover:bg-pink-200 '>⠿</span>
+        <div className='flex items-center bg-pink-50 px-2 mb-1 w-full'>
+            <span ref={handleRef} className='cursor-pointer touch-none hover:bg-pink-200'>⠿</span>
             <span className='w-2/3 mx-3'>{rule.field}</span>
             
             { rule.direction === 'asc' ? 

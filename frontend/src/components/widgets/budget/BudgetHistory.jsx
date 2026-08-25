@@ -1,5 +1,5 @@
 import React from 'react'
-import { getDisplayRows } from '../../utils/utils'
+import { getDisplayRows } from '../../../utils/utils'
 
 const MAX_ROWS = 5
 const BORDER = 'border-black'

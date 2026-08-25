@@ -80,3 +80,16 @@ export function paginateByHeight(transactions, availableHeight, transactionRowHe
        paginatedData.push(currentPage)
        return paginatedData
 }
+
+export function getDailyTotals(transactions) {
+    const groups = new Map()
+
+    transactions.forEach(row => {
+        const group = groups.get(row.date) ?? { income: 0, expense: 0 }
+            
+        group[row.type] += row.amount
+        groups.set(row.date, group)
+    })
+
+    return groups
+}
