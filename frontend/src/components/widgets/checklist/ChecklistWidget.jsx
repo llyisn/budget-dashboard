@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ChecklistItem from './ChecklistItem'
 
-const ChecklistWidget = ({data = []}) => {
+const ChecklistWidget = ({ref, gridStyle, data = []}) => {
   const [list, setList] = useState(data)
 
   function toggleItem(id) {
@@ -17,8 +17,10 @@ const ChecklistWidget = ({data = []}) => {
   }
 
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-2 col-span-2 row-start-3
+    <div
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       @container
       '>
         <div className='text-[13cqw] p-[10cqw]'>

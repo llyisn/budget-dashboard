@@ -4,12 +4,14 @@ import { getDisplayRows } from '../../../utils/utils'
 const MAX_ROWS = 5
 const BORDER = 'border-black'
 
-const BudgetHistory = ({data = []}) => {
+const BudgetHistory = ({ref, gridStyle, data = []}) => {
   const rows = getDisplayRows(data, MAX_ROWS, {month: null, total: null, rent: null, food: null})
 
   return (
-    <div className='bg-(--widget-color) rounded-md 
-      row-span-2 col-span-4
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md 
       @container-size'>
       <table className='w-full border-separate border-spacing-0'>
         <thead>

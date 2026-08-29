@@ -1,10 +1,11 @@
 import React from 'react'
 
-const TransactionsWidget = ({date, price=0}) => {
+const TransactionsWidget = ({ref, gridStyle, date, price=0}) => {
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-6 col-span-4
-      col-start-7
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       flex flex-col overflow-hidden
       @container'>
         {/* header */}

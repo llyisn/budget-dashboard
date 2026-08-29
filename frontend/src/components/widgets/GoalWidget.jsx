@@ -1,11 +1,13 @@
 import React from 'react'
 
-const GoalWidget = ({valueNow=0, valueMax=0}) => {
+const GoalWidget = ({ref, gridStyle, valueNow=0, valueMax=0}) => {
 
   const valueRatio = (valueNow / valueMax) > 1 ? 1 : (valueNow / valueMax)
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-2 col-span-3
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       @container-size
       flex flex-col overflow-hidden'>
         {/* header */}

@@ -13,7 +13,7 @@ const LABEL_MIN_HORIZONTAL_SPACE = 12 * 2
  * Each bar receives a color from CHART_COLORS. Labels are rendered inside bars if there is enough space, otherwise outside.
  * @param {Record<string, number>} props.data - mapping of category names to spending amounts.
  */
-const TopExpenses = ({data = {}}) => {
+const TopExpenses = ({ref, gridStyle, data = {}}) => {
     const dataSum = Object.values(data).reduce((sum, val) => sum + val, 0)
     const sortedData = Object.entries(data).sort(sortByValueDesc)
     
@@ -41,8 +41,10 @@ const TopExpenses = ({data = {}}) => {
     }, [])
 
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-2 col-span-4
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       @container'>
         {/* header and btn */}
       <div className='flex justify-between items-center px-[6cqw] py-[2cqw]'>

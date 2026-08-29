@@ -1,9 +1,11 @@
 import React from 'react'
 
-const TextWidget = ({text=""}) => {
+const TextWidget = ({ref, gridStyle, text=""}) => {
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-2 col-span-3
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       @container
       flex items-center
       '>

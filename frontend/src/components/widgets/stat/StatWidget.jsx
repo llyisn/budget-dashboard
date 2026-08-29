@@ -1,10 +1,13 @@
 import React from 'react'
 
-const StatWidget = ({variant="", label="", value="$0", delta=""}) => {
+const StatWidget = ({ref, gridStyle, variant="", label="", value="$0", delta=""}) => {
+  //3x2
   if (variant === "detailed")
   return (
-    <div className='bg-(--widget-color) rounded-md
-    row-span-2 col-span-3 
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
     @container
     flex flex-col justify-center
     gap-1
@@ -17,10 +20,13 @@ const StatWidget = ({variant="", label="", value="$0", delta=""}) => {
     </div>
   )
 
+  //2x1
   else if (variant === "compact")
     return (
-      <div className='bg-(--widget-color) rounded-md
-      row-span-1 col-span-2
+      <div
+      ref={ref}
+      style={gridStyle}
+      className='bg-(--widget-color) rounded-md
       @container
       flex flex-col justify-center'>
         <div className='pl-[6cqw]'>
@@ -30,10 +36,13 @@ const StatWidget = ({variant="", label="", value="$0", delta=""}) => {
       </div>
     )
 
+    //3x1
   else if (variant === "inline")
     return (
-      <div className='bg-(--widget-color) rounded-md
-      row-span-1 col-span-3
+      <div 
+      ref={ref}
+      style={gridStyle}
+      className='bg-(--widget-color) rounded-md
       @container
       flex justify-between items-center
       '>

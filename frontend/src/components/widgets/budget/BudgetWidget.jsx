@@ -1,14 +1,15 @@
 import React from 'react'
 
-const BudgetWidget = ({variant="", valueNow=0, valueMax=0}) => {
+const BudgetWidget = ({ref, gridStyle, variant="", valueNow=0, valueMax=0}) => {
 
     const valueRatio = (valueNow / valueMax) > 1 ? 1 : (valueNow / valueMax)
+   //3x1
     if (variant === 'inline')
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-1 
-      col-span-3
-      row-start-2
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       @container-size
       flex flex-col'> 
     {/* row-start is temporary */}
@@ -30,14 +31,6 @@ const BudgetWidget = ({variant="", valueNow=0, valueMax=0}) => {
     </div>
     
   )
-
-  else if (variant === 'detailed')
-    return (
-        <div className='bg-(--widget-color) rounded-md
-        row-span-2 col-span-4'>
-            {/* tbd */}
-        </div>
-    )
 }
 
 export default BudgetWidget

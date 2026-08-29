@@ -1,10 +1,11 @@
 import React from 'react'
 
-const ImageWidget = () => {
+const ImageWidget = ({ref, gridStyle}) => {
   return (
-    <div className='bg-(--widget-color) rounded-md
-      row-span-4 col-span-4
-      row-start-3
+    <div 
+    ref={ref}
+    style={gridStyle}
+    className='bg-(--widget-color) rounded-md
       flex justify-center items-center overflow-hidden'>
         <img className='min-h-full min-w-full shrink-0' src="" alt="" />
     </div>
