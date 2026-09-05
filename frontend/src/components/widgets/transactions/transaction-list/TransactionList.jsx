@@ -10,7 +10,7 @@ import PaginationBtns from '../../../PaginationBtns'
 import SortMenu from './SortMenu'
 import FilterMenu from './FilterMenu'
 
-const TransactionList = () => {
+const TransactionList = ({ref, gridStyle}) => {
    // DATA
    const  { transactions } = useTransactions()
 
@@ -44,9 +44,12 @@ const TransactionList = () => {
     } = usePagination(filter.filteredTransactions)
 
  return (
-   <div className='bg-(--widget-color) rounded-md
-   row-span-7 col-span-5 overflow-hidden
-   @container'>
+   <div 
+   ref={ref}
+   className='bg-(--widget-color) rounded-md
+    overflow-hidden
+   @container'
+   style={gridStyle}>
        <div className='px-[6cqw] py-[3cqw] flex flex-col h-full'>
            {/* header */}
            <div className='flex justify-between items-center mb-2'>

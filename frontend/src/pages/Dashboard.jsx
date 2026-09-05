@@ -3,37 +3,26 @@ import Header from '../components/Header'
 import useCellSize from '../hooks/useCellSize'
 import DraggableWidget from '../components/widgets/DraggableWidget'
 import { DragDropProvider, useDroppable } from '@dnd-kit/react'
-import { dragTransformToGridDelta } from '../utils/dashboard/grid'
 import { moveWidget } from '../utils/dashboard/movement'
-
-const widgetData = [
-  { id: 1, type: 'stat', w: 3, h: 1, x: 1, y: 1, settings: { variant: 'inline', label: 'savings', value: '$86 347', delta: '↑12,4% vs. last month' } },
-  { id: 2, type: 'budget', w: 3, h: 1, x: 1, y: 2, settings: { variant: 'inline', valueNow: 5.3, valueMax: 7 } },
-  { id: 3, type: 'text', w: 3, h: 2, x: 4, y: 1, settings: { text: 'ugly consistency beats pretty perfection' } },
-  { id: 4, type: 'checklist', w: 2, h: 2, x: 1, y: 3, settings: { data: [
-    { id: 1, content: 'order tv', checked: true },
-    { id: 2, content: 'taxes', checked: false },
-    { id: 3, content: 'docs', checked: false }
-  ] } },
-//  { id: 5, type: 'transaction', w: 4, h: 6, x: 7, y: 1, settings: { date: '23.07.26', price: 192.34 } },
-  { id: 6, type: 'budgetHistory', w: 4, h: 2, x: 11, y: 1, settings: { data: [
-    { month: 'Jul 26', total: 3484, rent: 2500, food: null }
-  ] } },
-  { id: 7, type: 'goal', w: 3, h: 2, x: 3, y: 3, settings: { valueNow: 4305, valueMax: 8000 } },
-  { id: 8, type: 'topExpenses', w: 4, h: 2, x: 11, y: 3, settings: { data: { rent: 439.35, food: 1823.88, transport: 331.66 } } }
-]
 
 const maxColumns = 14
 
-const Dashboard = () => {
+const Dashboard = ({name='', widgetData}) => {
   const gridContainerRef = useRef(null)
   const gridAreaRef = useRef(null) // flexible wrapper that owns the available height
   const { cellSize, gapSize } = useCellSize(gridContainerRef)
   const { droppable } = useDroppable({ id: 'dashboard', element: gridContainerRef })
 
-  const [widgets, setWidgets] = useState(widgetData)
+  const [isEditMode, setIsEditMode] = useState(false)
 
   const [maxRows, setMaxRows] = useState(1)
+
+  //commited layout
+  const [widgets, setWidgets] = useState(widgetData)
+  //temporary layout shown during dragging
+  const [previewWidgets, setPreviewWidgets] = useState(null)
+  //of the dragged widget
+  const dragStartPosition = useRef(null)
 
   useEffect(() => {
     if (!gridAreaRef.current) return
@@ -52,24 +41,40 @@ const Dashboard = () => {
     return () => observer.disconnect()
   }, [cellSize, gapSize])
 
-  function handleDragEnd({ operation }) {
+  function updateWidgetSettings(id, newSettings) {
+    setWidgets(prev => prev.map(widget =>
+      widget.id === id ?
+      {...widget, settings: {...widget.settings, ...newSettings}}
+      : widget
+    ))
+  }
+
+  function handleDragStart({operation}) {
+    const widget = widgets.find(w => w.id === operation.source.id)
+    if (!widget) return
+
+    dragStartPosition.current = { x: widget.x, y: widget.y}
+    //start with normal layout
+    setPreviewWidgets(widgets)
+  }
+
+
+  function handleDragMove({ operation }) {
     const { source, transform } = operation
 
-    const widget = widgets.find(w => w.id === source.id)
+    const start = dragStartPosition.current
+    if (!start) return
+    
+    const trackSize = cellSize + gapSize
 
-    const { x: dx, y: dy } = dragTransformToGridDelta({
-      transformX: transform?.x ?? 0,
-      transformY: transform?.y ?? 0,
-      cellSize,
-      gapSize
-    })
+    const deltaX = Math.round((transform?.x ?? 0) / trackSize)
+    const deltaY = Math.round((transform?.y ?? 0) / trackSize)
 
-    const x = widget.x + dx
-    const y = widget.y + dy
+    const x = start.x + deltaX
+    const y = start.y + deltaY
 
-    setWidgets(prev =>
-      moveWidget({
-        widgets: prev,
+    const preview = moveWidget({
+        widgets,
         widgetId: source.id,
         x,
         y,
@@ -78,16 +83,28 @@ const Dashboard = () => {
         dragDeltaX: transform?.x ?? 0,
         dragDeltaY: transform?.y ?? 0
       })
-    )
+    setPreviewWidgets(preview)
   }
+
+  function handleDragEnd() {
+    if (previewWidgets) {
+      setWidgets(previewWidgets)
+    }
+
+    setPreviewWidgets(null)
+    dragStartPosition.current = null
+  }
+
+  const displayedWidgets = previewWidgets ?? widgets
 
   return (
     <div className="bg-linear-to-b from-[#F6CECE] to-[#C7B5C6]">
       <div className="h-screen px-12 py-4 flex flex-col">
-        <Header title="Dashboard" />
+        <Header title={name} isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
         <div ref={gridAreaRef} className="flex-1 min-h-0">
           <DragDropProvider
-          
+          onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
           onDragEnd={handleDragEnd}
           >
             <div
@@ -95,8 +112,10 @@ const Dashboard = () => {
               className="grid grid-cols-14 gap-(--gap-size) auto-rows-(--cell-size)"
               style={{ '--cell-size': `${cellSize}px`, '--gap-size': `${gapSize}px` }}
             >
-              {widgets.map(widget => (
-                <DraggableWidget key={widget.id} widget={widget} />
+              {displayedWidgets.map(widget => (
+                <DraggableWidget key={widget.id} widget={widget} disabled={!isEditMode}
+                onSettingsChange={newSettings => updateWidgetSettings(widget.id,newSettings)} 
+                isEditMode={isEditMode}/>
               ))}
             </div>
           </DragDropProvider>

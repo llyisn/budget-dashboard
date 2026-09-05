@@ -8,28 +8,36 @@ import TransactionsWidget from './transactions/TransactionsWidget';
 import BudgetHistory from './budget/BudgetHistory';
 import GoalWidget from './GoalWidget';
 import TopExpenses from './TopExpenses';
+import {motion} from 'motion/react'
+import StatOverview from './stat/StatOverview';
+import TransactionList from './transactions/transaction-list/TransactionList';
 
 //component map
 const widgetTypes = {
-  stat: StatWidget,
-  budget: BudgetWidget,
-  text: TextWidget,
-  checklist: ChecklistWidget,
-  transaction: TransactionsWidget,
-  budgetHistory: BudgetHistory,
-  goal: GoalWidget,
-  topExpenses: TopExpenses
+  stat: motion.create(StatWidget),
+  budget: motion.create(BudgetWidget),
+  text: motion.create(TextWidget),
+  checklist: motion.create(ChecklistWidget),
+  transaction: motion.create(TransactionsWidget),
+  budgetHistory: motion.create(BudgetHistory),
+  goal: motion.create(GoalWidget),
+  topExpenses: motion.create(TopExpenses),
+  'stat overview': motion.create(StatOverview),
+  'transactions list': motion.create(TransactionList)
 }
 
-const DraggableWidget = ({widget}) => {
-    const { ref } = useDraggable({id: widget.id, data: widget})
+const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode}) => {
+    const { ref, isDragging } = useDraggable({id: widget.id, data: widget, disabled})
     const Component = widgetTypes[widget.type]
     
     const gridStyle = { gridColumn: `${widget.x} / span ${widget.w}`, 
                 gridRow: `${widget.y} / span ${widget.h}` }
 
   return (
-    <Component ref={ref} {...widget.settings} gridStyle={gridStyle} />
+    <Component ref={ref} {...widget.settings} gridStyle={gridStyle}
+    onSettingsChange={onSettingsChange}
+    isEditMode={isEditMode}
+    layout />
   )
 }
 

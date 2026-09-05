@@ -13,17 +13,3 @@ export function clampPosition(x, y, w, h, maxColumns, maxRows) {
     y: Math.min(Math.max(1, y), maxRows - h + 1)
   }
 }
-
-export function dragTransformToGridDelta({
-    transformX,
-    transformY,
-    cellSize,
-    gapSize
-    }) {
-    const trackSize = cellSize + gapSize
-
-    return {
-        x: Math.round(transformX / trackSize),
-        y: Math.round(transformY / trackSize)
-    }
-}

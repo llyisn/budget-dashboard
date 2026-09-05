@@ -4,13 +4,15 @@ import { getDisplayRows } from '../../../utils/utils'
 // not finished
 const MAX_ROWS = 4
 
-const StatOverview = ({title='', data=[]}) => {
+const StatOverview = ({ref, gridStyle, title='', data=[]}) => {
     const rows = getDisplayRows(data, MAX_ROWS, {month: null, amount: null, comparison: null})
 
   return (
-    <div className='bg-(--widget-color) rounded-md
-    row-span-4 col-span-4
-    @container'>
+    <div 
+    ref={ref}
+    className='bg-(--widget-color) rounded-md
+    @container'
+    style={gridStyle}>
         <div className='px-[9cqw] py-[4cqw]'>
             <h1 className='text-[9cqw]'>{title}</h1>
 
