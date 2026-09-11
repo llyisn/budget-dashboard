@@ -1,5 +1,4 @@
 import { useSortable } from '@dnd-kit/react/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { MoveDown, MoveUp } from 'lucide-react'
 import React from 'react'
 

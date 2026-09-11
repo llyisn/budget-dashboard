@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 const GAP_RATIO = 5.25;
 
-const useCellSize = (gridContainerRef) => {
+const useCellSize = (gridContainerRef, columns) => {
    const [cellSize, setCellSize] = useState(84)
    const [gapSize, setGapSize] = useState(null)
 
@@ -11,9 +11,7 @@ const useCellSize = (gridContainerRef) => {
 
         const observer = new ResizeObserver(entries => {
             for (let entry of entries) {
-        //     console.log('Element:', entry.target);
-                //const cellSize = (entry.contentRect.width - (11*16)) / 12
-                const cell = entry.contentRect.width / (14 + 11 / GAP_RATIO)
+                const cell = entry.contentRect.width / (columns + (columns-1) / GAP_RATIO)
                 setCellSize(cell)
                 const gap = cell / GAP_RATIO
                 setGapSize(gap)
@@ -26,7 +24,7 @@ const useCellSize = (gridContainerRef) => {
                 observer.disconnect()
             }
         
-    }, [])
+    }, [columns])
 
     return { cellSize, gapSize }
 }

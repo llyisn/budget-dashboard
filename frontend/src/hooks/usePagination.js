@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import useElementHeight from "./useElementHeight"
-import { getPageIndices, paginateByHeight } from "../utils/utils"
+import { paginateByHeight } from "../utils/utils"
 
 const ROW_GAP = 12
 

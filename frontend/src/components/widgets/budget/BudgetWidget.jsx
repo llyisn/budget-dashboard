@@ -1,8 +1,27 @@
 import React from 'react'
+import useTransactions from '../../../hooks/useTransactions'
+import { countStat } from '../../../utils/transactionsUtils'
 
-const BudgetWidget = ({ref, gridStyle, variant="", valueNow=0, valueMax=0}) => {
+const BudgetWidget = ({ref, gridStyle, variant="", currency='$', max=0, preview=false}) => {
+  const {transactions} = useTransactions(preview)
+  const now = countStat(transactions, 'expense', 'month') + countStat(transactions, 'savings', 'month')
+  
+  //for progress bar
+  const valueRatio = (now / max) > 1 ? 1 : (now / max)
 
-    const valueRatio = (valueNow / valueMax) > 1 ? 1 : (valueNow / valueMax)
+  const displayMoney = formatMoneyDisplay()
+
+    function formatMoneyDisplay(type) {
+      let formattedNow = now
+      let formattedMax = max
+      if (now >= 1000) {
+        formattedNow = ( now / 1000).toFixed(1) + 'k'
+      }
+      if (max >= 1000) {
+        formattedMax = ( max / 1000).toFixed(1) + 'k'
+      }
+      return `${currency}${formattedNow}/${formattedMax}`
+    }
    //3x1
     if (variant === 'inline')
   return (
@@ -12,10 +31,9 @@ const BudgetWidget = ({ref, gridStyle, variant="", valueNow=0, valueMax=0}) => {
     className='bg-(--widget-color) rounded-md
       @container-size
       flex flex-col'> 
-    {/* row-start is temporary */}
         <div className='flex-1 flex justify-between items-center px-[8cqw] mb-[-10cqh]'>
             <p className='text-[10cqw]'>budget</p>
-            <p className='text-[12cqw]'>${valueNow}k/{valueMax}k</p>
+            <p className='text-[11cqw]'>{displayMoney}</p>
         </div>
 
         {/* progress bar */}

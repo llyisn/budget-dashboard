@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import fakeTransactions from '../data/fakeData'
+import {fakeTransactions, previewTransactions} from '../data/fakeData'
 
-const useTransactions = () => {
-    const [transactions, setTransactions] = useState(fakeTransactions)
+const useTransactions = (preview=false) => {
+    const [transactions, setTransactions] = useState(preview ? previewTransactions : fakeTransactions)
 
     function addTransaction(newTransaction) {
         const updatedTransactions = [...transactions, newTransaction]

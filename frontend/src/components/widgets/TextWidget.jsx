@@ -7,7 +7,8 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
 
   function commitEdit() {
     setIsEditing(false)
-    onSettingsChange({ text: editableRef.current?.textContent ?? "" })
+    const value = editableRef.current?.textContent ?? ""
+    onSettingsChange({ text: value.replace(/\u200B/g, '') })
   }
 
   function handleClick(e) {
@@ -18,14 +19,31 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
 
   //focus cursor on where user clicks when editing text
   useLayoutEffect(() => {
-    if (!isEditing || !editableRef.current || !clickPositionRef.current) return
+    if (!isEditing || !editableRef.current) return
     
     const el = editableRef.current
+    console.log(el)
     el.focus()
+    
+
+    const selection = window.getSelection()
+    const range = document.createRange()
+
+    if (!el.textContent) {
+      range.setStart(el,0)
+      range.collapse(true)
+      selection.removeAllRanges()
+      selection.addRange(range)
+
+      clickPositionRef.current = null
+      return
+    }
+
+    if (!clickPositionRef.current) return
 
     const { x, y } = clickPositionRef.current
     let node = el.firstChild
-    let offset = node ? node.length : 0 // default is end of text
+    let offset = node.length // default is end of text
 
     if (document.caretPositionFromPoint) {
       const pos = document.caretPositionFromPoint(x, y)
@@ -34,15 +52,14 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
         offset = pos.offset
       }
     } else if (document.caretRangeFromPoint) { //for safari
-      const range = document.caretRangeFromPoint(x, y)
-      if (range && el.contains(range.startContainer)) {
-        node = range.startContainer
-        offset = range.startOffset
+      const rangeFromPoint = document.caretRangeFromPoint(x, y)
+      if (rangeFromPoint && el.contains(rangeFromPoint.startContainer)) {
+        node = rangeFromPoint.startContainer
+        offset = rangeFromPoint.startOffset
       }
     }
 
-    const selection = window.getSelection()
-    const range = document.createRange()
+
     range.setStart(node, offset)
     range.collapse(true)
     selection.removeAllRanges()
@@ -50,20 +67,20 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
   }, [isEditing])
 
   return (
-    <div ref={ref} style={gridStyle} className='bg-(--widget-color) rounded-md px-5 py-7 overflow-hidden'>
+    <div ref={ref} style={gridStyle} className='bg-(--widget-color) rounded-md overflow-hidden @container p-2 md:p-5 '>
       {isEditing ? (
         <div
           ref={editableRef}
           contentEditable
           suppressContentEditableWarning
           onBlur={commitEdit}
-          className='size-full outline-none text-xs sm:text-md md:text-base lg:text-2xl xl:text-3xl'
+          className='size-full outline-none text-[12cqw]'
         >
           {text}
         </div>
       ) : (
-        <div onClick={handleClick}>
-          <p className='text-xs sm:text-md md:text-base lg:text-2xl xl:text-3xl'>{text}</p>
+        <div onClick={handleClick} className='min-h-full'>
+          <p className='text-[12cqw]'>{text}</p>
         </div>
       )}
     </div>

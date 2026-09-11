@@ -1,11 +1,68 @@
-import React, { useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import ChecklistItem from './ChecklistItem'
 
-const ChecklistWidget = ({ref, gridStyle, data = []}) => {
-  const [list, setList] = useState(data)
+const ChecklistWidget = ({ref, gridStyle, data = [], isEditMode}) => {
+  //item: { id: string, content: string, checked: boolean }
+  const [items, setItems] = useState(data) //list of todos (checklist items)
+  const [editingId, setEditingId] = useState(null) //which item is currently being edited
+  const [caretRequest, setCaretRequest] = useState(null) //info where caret should go in the item
 
+  function requestEdit(id, request) {
+    setEditingId(id)
+    setCaretRequest(request)
+  }
+
+  //save changes made to the checklist
+  function commit(id, text) {
+    setItems(list => list.map(it => it.id === id ? { ...it, content: text } : it))
+  }
+
+  function splitItem(id, before, after) {
+    if (items.length >= 4) return
+
+    const newId = crypto.randomUUID()
+
+    setItems(list => {
+      const i = list.findIndex(item => item.id === id)
+      const currentItem = list[i]
+
+      const newList = [...list]
+      newList[i] = {...currentItem, content: before}
+      newList.splice(i+1, 0, {id: newId, content: after, checked: false})
+
+      return newList
+    })
+
+    setEditingId(newId)
+    setCaretRequest({
+      type: 'offset',
+      value: 0
+    })
+  }
+
+function mergeUp(id, text) {
+  const index = items.findIndex(item => item.id === id)
+  if (index <= 0) return // nothing above to merge into
+
+  const prevItem = items[index - 1]
+  const caretOffset = prevItem.content.length
+
+  setItems(list => {
+    const i = list.findIndex(item => item.id === id)
+    if (i <= 0) return list
+    const newList = [...list]
+    newList[i - 1] = { ...newList[i - 1], content: newList[i - 1].content + text }
+    newList.splice(i, 1)
+    return newList
+  })
+
+  setEditingId(prevItem.id)
+  setCaretRequest({ type: 'offset', value: caretOffset })
+}
+
+//set 'checked' of the item to true or false
   function toggleItem(id) {
-    const newList = list.map((item) => {
+    const newList = items.map((item) => {
       if (item.id === id) {
         const newItem = {...item, checked: !item.checked}
         return newItem
@@ -13,7 +70,7 @@ const ChecklistWidget = ({ref, gridStyle, data = []}) => {
       else return item
     })
 
-    setList(newList)
+    setItems(newList)
   }
 
   return (
@@ -21,17 +78,27 @@ const ChecklistWidget = ({ref, gridStyle, data = []}) => {
     ref={ref}
     style={gridStyle}
     className='bg-(--widget-color) rounded-md
-      @container
+      @container overflow-scroll
       '>
-        <div className='text-[13cqw] p-[10cqw]'>
-          {
-            list.map((item) => (
-              <ChecklistItem key={item.id} id={item.id} content={item.content} checked={item.checked} onToggle={toggleItem}/>
-            ))
-          }
-           
-        </div>
-
+          <div className='text-[13cqw] p-[10cqw] '>
+            {
+              items.map((item) => (
+                <ChecklistItem 
+                key={item.id} 
+                id={item.id} 
+                isEditMode={isEditMode}
+                content={item.content} 
+                checked={item.checked} 
+                onToggle={toggleItem}
+                caretRequest={editingId === item.id ? caretRequest : null}
+                onCommit={commit}
+                onMergeUp={mergeUp}
+                isEditing={editingId === item.id}
+                onRequestEdit={requestEdit}
+                onSplitItem={splitItem}/>
+              ))
+            }
+          </div>
     </div>
   )
 }

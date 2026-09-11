@@ -6,7 +6,7 @@ import TextWidget from './TextWidget';
 import ChecklistWidget from './checklist/ChecklistWidget';
 import TransactionsWidget from './transactions/TransactionsWidget';
 import BudgetHistory from './budget/BudgetHistory';
-import GoalWidget from './GoalWidget';
+import GoalWidget from './goal/GoalWidget';
 import TopExpenses from './TopExpenses';
 import {motion} from 'motion/react'
 import StatOverview from './stat/StatOverview';
@@ -27,11 +27,13 @@ const widgetTypes = {
 }
 
 const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode}) => {
-    const { ref, isDragging } = useDraggable({id: widget.id, data: widget, disabled})
+    const { ref } = useDraggable({id: widget.id, data: widget, disabled})
     const Component = widgetTypes[widget.type]
     
     const gridStyle = { gridColumn: `${widget.x} / span ${widget.w}`, 
                 gridRow: `${widget.y} / span ${widget.h}` }
+
+    
 
   return (
     <Component ref={ref} {...widget.settings} gridStyle={gridStyle}

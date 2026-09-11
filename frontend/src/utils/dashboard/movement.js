@@ -28,3 +28,18 @@ export function moveWidget({widgets, widgetId, x, y, maxColumns, maxRows, dragDe
         dragDeltaY
     })
 }
+
+// export function placeNewWidget({widgets, newWidget, x, y, maxColumns, maxRows}) {
+//     const pos = clampPosition(x, y, newWidget.w, newWidget.h, maxColumns, maxRows)
+//     const placed = {...newWidget, x: pos.x, y: pos.y}
+
+//     return resolveCollisions({
+//         widgets: [...widgets, placed],
+//         draggedId: placed.id,
+//         oldPosition: position, // same spot → no accidental "swap" branch, just pushes
+//         maxColumns,
+//         maxRows,
+//         dragDeltaX: 0,
+//         dragDeltaY: 0
+//     })
+// }

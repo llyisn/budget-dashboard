@@ -10,9 +10,9 @@ import PaginationBtns from '../../../PaginationBtns'
 import SortMenu from './SortMenu'
 import FilterMenu from './FilterMenu'
 
-const TransactionList = ({ref, gridStyle}) => {
+const TransactionList = ({ref, gridStyle, preview=false}) => {
    // DATA
-   const  { transactions } = useTransactions()
+   const  { transactions } = useTransactions(preview)
 
    //for displaying total sum of income/expense per day on date header
    const dailyTotals = useMemo(() => getDailyTotals(transactions), [transactions])
@@ -127,7 +127,7 @@ const TransactionList = ({ref, gridStyle}) => {
                        <div key={row.id}>
                            {!isSameDay &&
                                <div className={`flex gap-2 rounded-md text-[4cqw] ${isFirstDay ? '' : 'mt-4'}`}>
-                                   <span>{row.date}</span>
+                                   <time dateTime={row.date}>{row.date}</time>
                                    <span>|</span>
                                    
                                    {totals?.income > 0 && (
@@ -140,7 +140,7 @@ const TransactionList = ({ref, gridStyle}) => {
                                </div>
                             }
                             
-                            <TransactionRow row={row} />
+                            <TransactionRow row={row} detailed={true} />
                        </div>  
                    )
                 })

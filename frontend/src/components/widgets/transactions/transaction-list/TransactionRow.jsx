@@ -1,7 +1,21 @@
 import React from 'react'
 
-const TransactionRow = ({row}) => {
+const TransactionRow = ({row, detailed=false}) => {
     const isExpense = row.type === 'expense'
+
+    if (!detailed) {
+      return (
+<div className='flex justify-between bg-white px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'>
+      <div className='flex items-center'>
+          <p className='text-[5cqw]'>{row.icon}</p>
+          <p className='pl-[3cqw]'>{row.label}</p>
+    </div>
+      
+      <span className=''>{isExpense ? '-' : '+'}{row.currency}{row.amount}</span>
+            </div>
+      )
+    }
+
 
   return (
     <div className='bg-white grid grid-cols-[1fr_auto_auto] p-[2cqw] mb-1.5'>

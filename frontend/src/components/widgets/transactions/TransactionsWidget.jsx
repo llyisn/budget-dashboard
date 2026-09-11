@@ -1,6 +1,19 @@
 import React from 'react'
+import useTransactions from '../../../hooks/useTransactions'
+import { getDailyTotals } from '../../../utils/utils'
+import TransactionRow from './transaction-list/TransactionRow'
 
-const TransactionsWidget = ({ref, gridStyle, date, price=0}) => {
+const TransactionsWidget = ({ref, gridStyle, preview=false}) => {
+  const {transactions} = useTransactions(preview)
+  //for displaying total sum of income/expense per day on date header
+  const dailyTotals = useMemo(() => getDailyTotals(transactions), [transactions])
+
+  //sort by date desc
+  const sortedTransactions = transactions.toSorted((a,b) => a.date <= b.date)
+
+
+
+
   return (
     <div 
     ref={ref}
@@ -13,16 +26,36 @@ const TransactionsWidget = ({ref, gridStyle, date, price=0}) => {
             <p className='text-[10cqw]'>transactions</p>
             <p className='text-[9cqw]'>+</p>
         </div>
-        {/* history of transactions */}
+        {/* transactions mapping */}
         <div className='flex-1 px-[6cqw] overflow-y-auto'>
-            <time className='text-[5cqw]' dateTime={date}>{date}</time>
-            <div className='flex justify-between bg-white px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'>
-                <div className='flex items-center'>
-                    <p className='text-[5cqw]'>🍣</p>
-                    <p className='pl-[3cqw]'>hotpot</p>
-                </div>
-                <p>-${price}</p>
-            </div>
+            {
+              sortedTransactions.map((row, rowIndex) => {
+                const isSameDay = rowIndex > 0 && row.date === sortedTransactions[rowIndex-1].date
+                const isFirstDay = rowIndex === 0
+                
+                const totals = dailyTotals.get(row.date)
+
+                return (
+                  <div key={row.id}>
+                      {!isSameDay &&
+                        <div className={`flex gap-2 rounded-md text-[4cqw] ${isFirstDay ? '' : 'mt-4'}`}>
+                          <time dateTime={row.date}>{row.date}</time>
+                          <span>|</span>
+                                      
+                          {totals?.income > 0 && (
+                            <span className='text-[#A9B5A4]'>+{row.currency}{totals.income}</span>
+                          )}
+                          {totals?.expense > 0 && (
+                            <span className='text-[#B7A0A0]'>-{row.currency}{totals.expense}</span>
+                          )}
+                        </div>
+                      }
+                            
+                      <TransactionRow row={row} detailed={false} />
+                       </div> 
+                )
+              })
+            }
         </div>
             
         

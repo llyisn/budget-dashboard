@@ -1,5 +1,5 @@
 import { FloatingPortal, useDismiss, useFloating, useInteractions } from '@floating-ui/react'
-import React, { useState } from 'react'
+import React from 'react'
 import ChecklistItem from '../../checklist/ChecklistItem'
 
 const FilterChip = ({filter, availableOptions, isOpen, onToggle, selectedOptions, onOptionToggle}) => {

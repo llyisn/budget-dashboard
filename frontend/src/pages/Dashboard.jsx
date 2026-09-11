@@ -2,18 +2,21 @@ import React, { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header'
 import useCellSize from '../hooks/useCellSize'
 import DraggableWidget from '../components/widgets/DraggableWidget'
-import { DragDropProvider, useDroppable } from '@dnd-kit/react'
+import { DragDropProvider, DragOverlay, useDroppable } from '@dnd-kit/react'
 import { moveWidget } from '../utils/dashboard/movement'
+import WidgetLibrary from '../components/WidgetLibrary'
+import LibraryPreviewWidget from '../components/LibraryPreviewWidget'
 
-const maxColumns = 14
+const maxColumns = 16
 
 const Dashboard = ({name='', widgetData}) => {
   const gridContainerRef = useRef(null)
   const gridAreaRef = useRef(null) // flexible wrapper that owns the available height
-  const { cellSize, gapSize } = useCellSize(gridContainerRef)
+  const { cellSize, gapSize } = useCellSize(gridContainerRef, maxColumns)
   const { droppable } = useDroppable({ id: 'dashboard', element: gridContainerRef })
 
   const [isEditMode, setIsEditMode] = useState(false)
+
 
   const [maxRows, setMaxRows] = useState(1)
 
@@ -41,6 +44,36 @@ const Dashboard = ({name='', widgetData}) => {
     return () => observer.disconnect()
   }, [cellSize, gapSize])
 
+  //WIDGET LIBRARY
+  //for dragging widget library window
+  const [libraryPos, setLibraryPos] = useState({x: 0, y: 0})
+  const libraryDragStart = useRef(null)
+
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
+
+    useEffect(() => {
+    function handleKeyDown(e) {
+      const target = e.target
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target.isContentEditable
+      ) return
+
+      if (e.key.toLowerCase() === 'e')  {
+        setIsEditMode(prev => !prev)
+        setIsLibraryOpen(false)
+        return
+      }
+      if(e.key.toLowerCase() === 'w' && isEditMode) setIsLibraryOpen(prev => !prev)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isEditMode])
+
+  const [draggedLibraryWidget, setDraggedLibraryWidget] = useState(null)
+
   function updateWidgetSettings(id, newSettings) {
     setWidgets(prev => prev.map(widget =>
       widget.id === id ?
@@ -50,6 +83,20 @@ const Dashboard = ({name='', widgetData}) => {
   }
 
   function handleDragStart({operation}) {
+    const {source} = operation
+    if (source.data?.type === 'library') {
+      libraryDragStart.current = {
+        x: libraryPos.x,
+        y: libraryPos.y
+      }
+      return
+    }
+
+    if (source.data?.type === 'library-widget') {
+      setDraggedLibraryWidget(source.data)
+      return
+    }
+
     const widget = widgets.find(w => w.id === operation.source.id)
     if (!widget) return
 
@@ -62,16 +109,27 @@ const Dashboard = ({name='', widgetData}) => {
   function handleDragMove({ operation }) {
     const { source, transform } = operation
 
-    const start = dragStartPosition.current
-    if (!start) return
+    if (source.data?.type === 'library') {
+      const libraryStart = libraryDragStart.current
+      if (!libraryStart) return
+
+      setLibraryPos({
+        x: libraryStart.x + (transform?.x ?? 0),
+        y: libraryStart.y + (transform?.y ?? 0)
+      })
+      return
+    }
+
+    const widgetStart = dragStartPosition.current
+    if (!widgetStart) return
     
     const trackSize = cellSize + gapSize
 
     const deltaX = Math.round((transform?.x ?? 0) / trackSize)
     const deltaY = Math.round((transform?.y ?? 0) / trackSize)
 
-    const x = start.x + deltaX
-    const y = start.y + deltaY
+    const x = widgetStart.x + deltaX
+    const y = widgetStart.y + deltaY
 
     const preview = moveWidget({
         widgets,
@@ -86,7 +144,18 @@ const Dashboard = ({name='', widgetData}) => {
     setPreviewWidgets(preview)
   }
 
-  function handleDragEnd() {
+  function handleDragEnd({operation}) {
+    const {source} = operation
+    if (source.data?.type === 'library') {
+      libraryDragStart.current = null
+      return
+    }
+
+    if (source.data?.type === 'library-widget') {
+      setDraggedLibraryWidget(null)
+      return
+    }
+
     if (previewWidgets) {
       setWidgets(previewWidgets)
     }
@@ -98,19 +167,23 @@ const Dashboard = ({name='', widgetData}) => {
   const displayedWidgets = previewWidgets ?? widgets
 
   return (
-    <div className="bg-linear-to-b from-[#F6CECE] to-[#C7B5C6]">
-      <div className="h-screen px-12 py-4 flex flex-col">
-        <Header title={name} isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
-        <div ref={gridAreaRef} className="flex-1 min-h-0">
-          <DragDropProvider
+    <DragDropProvider
           onDragStart={handleDragStart}
           onDragMove={handleDragMove}
           onDragEnd={handleDragEnd}
           >
-            <div
+<div className="bg-linear-to-b from-[#F6CECE] to-[#C7B5C6]">
+  {isLibraryOpen && <WidgetLibrary position={libraryPos} close={setIsLibraryOpen}/>}
+      
+  <div className="h-screen px-12 py-4 flex flex-col">
+    <Header title={name} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setIsLibraryOpen={setIsLibraryOpen}/>
+    <div ref={gridAreaRef} className="flex-1 min-h-0">
+      <div
               ref={gridContainerRef}
-              className="grid grid-cols-14 gap-(--gap-size) auto-rows-(--cell-size)"
-              style={{ '--cell-size': `${cellSize}px`, '--gap-size': `${gapSize}px` }}
+              className="grid gap-(--gap-size) auto-rows-(--cell-size)"
+              style={{ '--cell-size': `${cellSize}px`, '--gap-size': `${gapSize}px`,
+              gridTemplateColumns: `repeat(${maxColumns}, minmax(0, 1fr))`
+            }}
             >
               {displayedWidgets.map(widget => (
                 <DraggableWidget key={widget.id} widget={widget} disabled={!isEditMode}
@@ -118,10 +191,12 @@ const Dashboard = ({name='', widgetData}) => {
                 isEditMode={isEditMode}/>
               ))}
             </div>
-          </DragDropProvider>
         </div>
       </div>
     </div>
+    
+          </DragDropProvider>
+    
   )
 }
 
