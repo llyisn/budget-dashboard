@@ -1,13 +1,5 @@
-import { insideGrid } from "./grid"
+import { insideGrid, overlaps } from "./grid"
 
-function overlaps(a, b) {
-  return (
-    a.x < b.x + b.w &&
-    a.x + a.w > b.x &&
-    a.y < b.y + b.h &&
-    a.y + a.h > b.y
-  )
-}
 
 // return every widget that overlaps with the given widget
 function collidingWidgets(widget, widgets) {
@@ -91,6 +83,7 @@ export function resolveCollisions({ widgets, draggedId, oldPosition, maxColumns,
 
   // same-size swap.
   if (
+    oldPosition && 
     initialCollisions.length === 1 &&
     initialCollisions[0].w === dragged.w &&
     initialCollisions[0].h === dragged.h &&
@@ -130,8 +123,11 @@ export function resolveCollisions({ widgets, draggedId, oldPosition, maxColumns,
     if (success) return working
   }
 
-  // no direction could resolve it cleanly — snap back
-  dragged.x = oldPosition.x
-  dragged.y = oldPosition.y
-  return base
+  // no direction could resolve it cleanly — snap back 
+  if (oldPosition) {
+    dragged.x = oldPosition.x
+    dragged.y = oldPosition.y
+    return base
+  }
+  return null
 }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import {useDraggable} from '@dnd-kit/react';
 import StatWidget from './stat/StatWidget';
 import BudgetWidget from './budget/BudgetWidget';
@@ -31,16 +31,19 @@ const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode}) => {
     const Component = widgetTypes[widget.type]
     
     const gridStyle = { gridColumn: `${widget.x} / span ${widget.w}`, 
-                gridRow: `${widget.y} / span ${widget.h}` }
+                gridRow: `${widget.y} / span ${widget.h}`,
+            }
 
-    
+    const handleChange = useCallback(newSettings => onSettingsChange(widget.id, newSettings), [onSettingsChange, widget.id])
 
   return (
-    <Component ref={ref} {...widget.settings} gridStyle={gridStyle}
-    onSettingsChange={onSettingsChange}
+<Component ref={ref} {...widget.settings} 
+gridStyle={gridStyle}
+    onSettingsChange={handleChange}
     isEditMode={isEditMode}
     layout />
+    
   )
 }
 
-export default DraggableWidget
+export default React.memo(DraggableWidget)

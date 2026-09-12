@@ -1,16 +1,13 @@
 import { resolveCollisions } from "./collision"
-import { clampPosition } from "./grid"
+import { clampPosition, findNearestFreeCell } from "./grid"
 
 
-export function moveWidget({widgets, widgetId, x, y, maxColumns, maxRows, dragDeltaX, dragDeltaY}) {
+export function moveWidget({widgets, widgetId, x, y, maxColumns, maxRows, dragDeltaX, dragDeltaY, oldPosition}) {
     const dragged = widgets.find(w => w.id === widgetId)
     if (!dragged) return widgets
     const position = clampPosition(x, y, dragged.w, dragged.h, maxColumns, maxRows)
 
-    const oldPosition = {
-        x: dragged.x,
-        y: dragged.y
-    }
+    const resolvedOldPosition = oldPosition !== undefined ? oldPosition : { x: dragged.x, y: dragged.y }
 
     const movedWidgets = widgets.map(widget =>
         widget.id === widgetId
@@ -18,28 +15,28 @@ export function moveWidget({widgets, widgetId, x, y, maxColumns, maxRows, dragDe
         : widget
     )
 
-    return resolveCollisions({
+    const resolved = resolveCollisions({
         widgets: movedWidgets,
         draggedId: widgetId,
-        oldPosition,
+        oldPosition: resolvedOldPosition,
         maxColumns,
         maxRows,
         dragDeltaX,
         dragDeltaY
     })
+
+    if (resolved) return resolved
+
+    //resolveCollisions failed. fresh library insert
+    //look for a free cell
+    const others = widgets.filter(w => w.id !== widgetId)
+    const fallback = findNearestFreeCell(others, dragged, maxColumns, maxRows, position.x, position.y)
+
+    if (fallback) {
+        return widgets.map(w => w.id === widgetId ? 
+            { ...widget, x: fallback.x, y: fallback.y} : w
+        )
+    }
+
+    return null //grid is full (or not enough space)
 }
-
-// export function placeNewWidget({widgets, newWidget, x, y, maxColumns, maxRows}) {
-//     const pos = clampPosition(x, y, newWidget.w, newWidget.h, maxColumns, maxRows)
-//     const placed = {...newWidget, x: pos.x, y: pos.y}
-
-//     return resolveCollisions({
-//         widgets: [...widgets, placed],
-//         draggedId: placed.id,
-//         oldPosition: position, // same spot → no accidental "swap" branch, just pushes
-//         maxColumns,
-//         maxRows,
-//         dragDeltaX: 0,
-//         dragDeltaY: 0
-//     })
-// }

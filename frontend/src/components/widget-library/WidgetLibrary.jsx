@@ -1,7 +1,8 @@
 import { useDraggable } from '@dnd-kit/react'
 import React from 'react'
-import LibraryPreviewWidget from './LibraryPreviewWidget'
+import LibraryItem from './LibraryItem'
 
+//{type: str, settings: {}, w: int, h: int}
 const previewWidgets = {
     income: [
         {
@@ -160,27 +161,37 @@ const previewWidgets = {
     
 }
 
-const WidgetLibrary = ({position, close}) => {
+const WidgetLibrary = ({position, close, isDraggingWidget}) => {
     const {ref, handleRef} = useDraggable({id: 'library', data: {type: 'library'}})
 
   return (
-    <div ref={ref} className='absolute bg-[#937878]/95 w-2/3 h-2/3 px-4 pt-2  border rounded-lg  z-20 @container flex flex-col'
+ <div 
+    ref={ref} 
+    
+    className='fixed z-20 w-2/3 h-2/3  bg-[#937878]/95 px-4 pt-2  border rounded-lg  @container flex flex-col transition-transform duration-300 ease-out'
+    
     style={{
         left: '16.67%',
         top: '16.67%',
-        transform: `translate(${position.x}px, ${position.y}px)`}}>
+        transform: isDraggingWidget
+          ? 'translate(calc(33.33vw - 50%), calc(83.33vh - 15%))'
+          : `translate(${position.x}px, ${position.y}px)`
+        }}
+    >
         
+
         {/* header */}
-        <div ref={handleRef} className='relative flex items-center  leading-tight text-white text-[4cqw]'>
+        <div className='flex items-center  leading-tight text-white text-[4cqw]'>
             <button
             className='cursor-pointer'
             onClick={() => close(false)}>×</button>
-            <span className='absolute left-1/2 -translate-x-1/2'>widgets</span>
-            {/* todo: handleRef */}
+            <div ref={handleRef} className='flex-1'>
+              <span className='text-center '>widgets</span>
+            </div>
         </div>
 
         {/* list of widgets to choose from */}
-        <div className='flex-1 text-[4cqw] p-2 overflow-scroll'>
+        <div className='flex-1 text-[3cqw] p-2 overflow-scroll'>
                 {
                     Object.entries(previewWidgets).map(([category, widgets]) => (
                         <div key={category}>
@@ -189,7 +200,7 @@ const WidgetLibrary = ({position, close}) => {
                         {
                             widgets.map((widget, index) => (
                         <div key={index} className='flex flex-col gap-1 items-center'>
-                            <LibraryPreviewWidget type={widget.type} settings={widget.settings} w={widget.w} h={widget.h} />
+                            <LibraryItem id={`library-${category}-${index}`} type={widget.type} settings={widget.settings} w={widget.w} h={widget.h} />
                             <span className='text-[2cqw] text-(--widget-color)'>{widget.w}x{widget.h}</span>
                         </div>))
                         }
@@ -197,10 +208,9 @@ const WidgetLibrary = ({position, close}) => {
                         </div>
                     ))
                 }
-        </div>
-      
-    </div>
+        </div>  
+   </div>
   )
 }
 
-export default WidgetLibrary
+export default React.memo(WidgetLibrary)

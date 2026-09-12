@@ -9,10 +9,7 @@ const TransactionsWidget = ({ref, gridStyle, preview=false}) => {
   const dailyTotals = useMemo(() => getDailyTotals(transactions), [transactions])
 
   //sort by date desc
-  const sortedTransactions = transactions.toSorted((a,b) => a.date <= b.date)
-
-
-
+  const sortedTransactions = transactions.toSorted((a,b) => b.date.localeCompare(a.date))
 
   return (
     <div 
