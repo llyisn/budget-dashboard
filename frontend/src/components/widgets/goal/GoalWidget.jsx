@@ -1,31 +1,35 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import GoalRow from './GoalRow'
 import useSavings from '../../../hooks/useSavings'
 import { ChevronDown } from 'lucide-react'
+import { ColorVarsContext } from '../../../context/context'
 
 //maximum goals displayed in the widget
 const MAX_GOALS = 1
 
 //savings that have an end goal amount
-const GoalWidget = ({ref, gridStyle}) => {
-  const {goals} = useSavings()
+const GoalWidget = ({preview=false}) => {
+  const colorVars = useContext(ColorVarsContext)
+
+  const {goals} = useSavings(preview)
   const slicedGoals = goals.slice(0, MAX_GOALS)
 
   const [selectedValue, setSelectedValue] = useState('category')
-  
 
 
   return (
-    <div 
-    ref={ref}
-    style={gridStyle}
-    className='bg-(--widget-color) rounded-md
+    <div
+    style={colorVars}
+    className={`bg-(--w-main)
+      border
+      border-(--w-border)
+      size-full rounded-md
       @container-size
-      flex flex-col overflow-hidden'>
+      flex flex-col overflow-hidden`}>
         {/* header */}
         <div className='flex justify-between items-center px-[8cqw] pt-[5cqw]'>
-            <p className='text-[12cqw]'>goals</p>
-            
+            <p className='text-(--w-text-title)  text-[12cqw]'>goals</p>
+           
             {/* select */}
             <div className='relative inline-block'>
                 <select className="h-5 pl-2 pr-5 text-[5cqw] appearance-none border rounded 

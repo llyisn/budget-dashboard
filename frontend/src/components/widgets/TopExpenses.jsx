@@ -1,8 +1,9 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import React, { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ExpenseBar from '../ExpenseBar'
 import { ChevronDown } from 'lucide-react'
 import useTransactions from '../../hooks/useTransactions'
 import { filteredTransactions } from '../../utils/transactionsUtils'
+import { ColorVarsContext } from '../../context/context'
 
 const CHART_COLORS = ['#CEA3A3', '#CEA3B8', '#A3B2CE']
 //maximum bars displayed in the widget
@@ -16,10 +17,12 @@ const LABEL_MIN_HORIZONTAL_SPACE = 12 * 2
  * Displays expense data (for current month) as proportional horizontal bars.
  * Each bar receives a color from CHART_COLORS. Labels are rendered inside bars if there is enough space, otherwise outside.
  */
-const TopExpenses = ({ref, gridStyle}) => {
+const TopExpenses = ({preview=false}) => {
+  const colorVars = useContext(ColorVarsContext)
+
   const [selectedValue, setSelectedValue] = useState('category')
 
-  const {transactions} = useTransactions()
+  const {transactions} = useTransactions(preview)
   const expenses = useMemo(() => filteredTransactions(transactions, 'expense', 'month'), [transactions]) 
   const topExpenses = useMemo(() => getTopExpenses(expenses, selectedValue), [expenses, selectedValue]) 
   const sortedTopExpenses = useMemo(() => [...topExpenses.entries()].sort(sortByValueDesc).slice(0, MAX_BARS), [topExpenses]) 
@@ -51,17 +54,17 @@ const TopExpenses = ({ref, gridStyle}) => {
 
   return (
     <div 
-    ref={ref}
-    style={gridStyle}
-    className='bg-(--widget-color) rounded-md
+    style={colorVars}
+    className='bg-(--w-main) size-full rounded-md
+    border border-(--w-border)
       @container'>
         {/* header and btn */}
       <div className='flex justify-between items-center px-[6cqw] py-[2cqw]'>
-        <p className='text-[10cqw]'>top expenses</p>
+        <p className='text-[10cqw] text-(--w-text-title)'>top expenses</p>
         
         {/* select */}
         <div className='relative inline-block'>
-            <select className="h-5 px-2 text-[4cqw] appearance-none border rounded 
+            <select className="h-5 px-2 text-[4cqw] appearance-none border border-(--w-border) rounded bg-(--w-buttons)
         " 
         value={selectedValue} onChange={e => setSelectedValue(e.target.value)}>
             <option value="category">category</option>

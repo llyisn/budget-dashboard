@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { ColorVarsContext } from '../context/context'
 
 const ExpenseBar = ({categoryKey, value, ratio, color, isLabelOverflowing, onRefsReady}) => {
+    const colorVars = useContext(ColorVarsContext)
 
     const bar = (
             <div 
@@ -11,7 +13,7 @@ const ExpenseBar = ({categoryKey, value, ratio, color, isLabelOverflowing, onRef
 
                 {/* render label inside the bar if fits */}
                 {!isLabelOverflowing && (
-                    <p ref={(node) => onRefsReady(categoryKey, 'label', node)} className='pl-1.5'>{categoryKey}</p>
+                    <p ref={(node) => onRefsReady(categoryKey, 'label', node)} className='pl-1.5 text-(--w-text-labels)'>{categoryKey}</p>
                 )}
                 
             </div>
@@ -22,10 +24,10 @@ const ExpenseBar = ({categoryKey, value, ratio, color, isLabelOverflowing, onRef
             {bar}
 
             {isLabelOverflowing && (
-                <p ref={(node) => onRefsReady(categoryKey, 'label', node)} className='pl-1.5'>{categoryKey}</p>
+                <p ref={(node) => onRefsReady(categoryKey, 'label', node)} className='pl-1.5 text-(--w-text-labels)'>{categoryKey}</p>
             )}
 
-            <p className='pl-3'>${value}</p>
+            <p className='pl-3 text-(--w-text-amount)'>${value}</p>
         </div>
     )
 

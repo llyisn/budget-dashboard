@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import useTransactions from '../../../hooks/useTransactions'
 import { getDailyTotals } from '../../../utils/utils'
 import TransactionRow from './transaction-list/TransactionRow'
+import { ColorVarsContext } from '../../../context/context'
 
-const TransactionsWidget = ({ref, gridStyle, preview=false}) => {
+const TransactionsWidget = ({preview=false}) => {
+  const colorVars = useContext(ColorVarsContext)
+
   const {transactions} = useTransactions(preview)
   //for displaying total sum of income/expense per day on date header
   const dailyTotals = useMemo(() => getDailyTotals(transactions), [transactions])
@@ -13,13 +16,13 @@ const TransactionsWidget = ({ref, gridStyle, preview=false}) => {
 
   return (
     <div 
-    ref={ref}
-    style={gridStyle}
-    className='bg-(--widget-color) rounded-md
+    style={colorVars}
+    className='bg-(--w-main) size-full rounded-md
       flex flex-col overflow-hidden
+      border border-(--w-border)
       @container'>
         {/* header */}
-        <div className='px-[6cqw] pt-[4cqw] flex justify-between items-center'>
+        <div className='text-(--w-text-title) px-[6cqw] pt-[4cqw] flex justify-between items-center'>
             <p className='text-[10cqw]'>transactions</p>
             <p className='text-[9cqw]'>+</p>
         </div>
@@ -36,7 +39,7 @@ const TransactionsWidget = ({ref, gridStyle, preview=false}) => {
                   <div key={row.id}>
                       {!isSameDay &&
                         <div className={`flex gap-2 rounded-md text-[4cqw] ${isFirstDay ? '' : 'mt-4'}`}>
-                          <time dateTime={row.date}>{row.date}</time>
+                          <time className='text-(--w-text-date)' dateTime={row.date}>{row.date}</time>
                           <span>|</span>
                                       
                           {totals?.income > 0 && (

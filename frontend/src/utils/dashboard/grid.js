@@ -37,7 +37,7 @@ export function findNearestFreeCell(widgets, widget, maxColumns, maxRows, origin
     const maxRadius = Math.max(maxColumns, maxRows)
     for (let radius = 0; radius <= maxRadius; radius++) {
       for (let dy = -radius; dy <= radius; dy++) {
-        for (let dx = -radius; dx <= array.length; dx++) {
+        for (let dx = -radius; dx <= radius; dx++) {
           if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue //check only outer ring
           const x = originX + dx
           const y = originY + dy

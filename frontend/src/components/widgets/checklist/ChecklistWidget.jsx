@@ -1,7 +1,10 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
 import ChecklistItem from './ChecklistItem'
+import { ColorVarsContext } from '../../../context/context'
 
-const ChecklistWidget = ({ref, gridStyle, data = [], isEditMode}) => {
+const ChecklistWidget = ({data = [], isEditMode}) => {
+  const colorVars = useContext(ColorVarsContext)
+  
   //item: { id: string, content: string, checked: boolean }
   const [items, setItems] = useState(data) //list of todos (checklist items)
   const [editingId, setEditingId] = useState(null) //which item is currently being edited
@@ -75,12 +78,13 @@ function mergeUp(id, text) {
 
   return (
     <div
-    ref={ref}
-    style={gridStyle}
-    className='bg-(--widget-color) rounded-md
+    style={colorVars}
+    className='bg-(--w-main)
+    border border-(--w-border) 
+    size-full rounded-md
       @container overflow-scroll
       '>
-          <div className='text-[13cqw] p-[10cqw] '>
+          <div className='text-(--w-text) text-[13cqw] p-[10cqw] '>
             {
               items.map((item) => (
                 <ChecklistItem 

@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import useTransactions from '../../../hooks/useTransactions'
 import { countStat } from '../../../utils/transactionsUtils'
+import { ColorVarsContext } from '../../../context/context'
 
-const StatWidget = ({ref, gridStyle, variant="", label="", currency="$", preview=false}) => {
+const StatWidget = ({variant="", label="", currency="$", preview=false}) => {
+  const colorVars = useContext(ColorVarsContext)
 
   const {transactions} = useTransactions(preview)
   const amount = countStat(transactions, label)
@@ -14,17 +16,16 @@ const StatWidget = ({ref, gridStyle, variant="", label="", currency="$", preview
   if (variant === "detailed")
   return (
     <div 
-    ref={ref}
-    style={gridStyle}
-    className='bg-(--widget-color) rounded-md
+   style={colorVars}
+    className='bg-(--w-main) size-full rounded-md
     @container
     flex flex-col justify-center
     gap-1
     '>
       <div className='pl-[6cqw]'>
-        <p className='text-[12cqw] leading-tight'>{label}</p>
-        <p className='text-[16cqw] leading-tight'>{currency}{amount}</p>
-        <p className='text-[8cqw] leading-tight text-gray-400'>{delta} last month</p>
+        <p className='text-[12cqw] text-(--w-label) leading-tight'>{label}</p>
+        <p className='text-[16cqw] text-(--w-text-amount) leading-tight'>{currency}{amount}</p>
+        <p className='text-[8cqw] text-(--w-text-add-info) leading-tigh'>{delta} last month</p>
       </div>
     </div>
   )
@@ -33,14 +34,13 @@ const StatWidget = ({ref, gridStyle, variant="", label="", currency="$", preview
   else if (variant === "compact")
     return (
       <div
-      ref={ref}
-      style={gridStyle}
-      className='bg-(--widget-color) rounded-md
+      style={colorVars}
+      className='bg-(--w-main) size-full rounded-md
       @container
       flex flex-col justify-center'>
         <div className='pl-[6cqw]'>
-        <p className='text-[12cqw]'>{label}</p>
-        <p className='text-[15cqw] leading-tight'>{currency}{amount}</p>
+        <p className='text-[12cqw] text-(--w-label)'>{label}</p>
+        <p className='text-[15cqw] text-(--w-text-amount) leading-tight'>{currency}{amount}</p>
         </div>
       </div>
     )
@@ -49,14 +49,13 @@ const StatWidget = ({ref, gridStyle, variant="", label="", currency="$", preview
   else if (variant === "inline")
     return (
       <div 
-      ref={ref}
-      style={gridStyle}
-      className='bg-(--widget-color) rounded-md
+      style={colorVars}
+      className='bg-(--w-main)  size-full  rounded-md
       @container
       flex justify-between items-center
       '>
-        <p className='text-[10cqw] pl-[8cqw]'>{label}</p>
-        <p className='text-[12cqw] pr-[8cqw]'>{currency}{amount}</p>
+        <p className='text-[10cqw] text-(--w-label) pl-[8cqw]'>{label}</p>
+        <p className='text-[12cqw] text-(--w-text-amount) pr-[8cqw]'>{currency}{amount}</p>
       </div>
   )
 }

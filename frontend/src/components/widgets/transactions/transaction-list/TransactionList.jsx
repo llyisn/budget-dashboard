@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { Search, CalendarFold } from 'lucide-react'
 import useTransactions from '../../../../hooks/useTransactions'
 import TransactionRow from './TransactionRow'
@@ -9,8 +9,11 @@ import usePagination from '../../../../hooks/usePagination'
 import PaginationBtns from '../../../PaginationBtns'
 import SortMenu from './SortMenu'
 import FilterMenu from './FilterMenu'
+import { ColorVarsContext } from '../../../../context/context'
 
-const TransactionList = ({ref, gridStyle, preview=false}) => {
+const TransactionList = ({preview=false}) => {
+    const colorVars = useContext(ColorVarsContext)
+    
    // DATA
    const  { transactions } = useTransactions(preview)
 
@@ -45,24 +48,25 @@ const TransactionList = ({ref, gridStyle, preview=false}) => {
 
  return (
    <div 
-   ref={ref}
-   className='bg-(--widget-color) rounded-md
+   style={colorVars}
+   className='bg-(--w-main) size-full rounded-md
+   border border-(--w-border)
     overflow-hidden
-   @container'
-   style={gridStyle}>
+   @container'>
        <div className='px-[6cqw] py-[3cqw] flex flex-col h-full'>
            {/* header */}
            <div className='flex justify-between items-center mb-2'>
-               <h1 className='text-[7cqw]'>transactions</h1>
+               <h1 className='text-[7cqw] text-(--w-title)'>transactions</h1>
                {/* btn */}
-               <button className='text-[4cqw] leading-tight border rounded-2xl px-[4cqw] pt-0.5 cursor-pointer'>+ add</button> 
+               <button className='bg-(--w-buttons)
+               text-[4cqw] leading-tight border rounded-2xl px-[4cqw] pt-0.5 cursor-pointer'>+ add</button> 
            </div>
 
 
            {/* search bar */}
            <div className='flex items-center'>
-               <Search size={14} color='#B2A6A6'/>
-               <span className='pl-2 text-[4cqw] text-[#B2A6A6]'>search</span>
+               <Search size={14} color='(--w-search)'/>
+               <span className='pl-2 text-[4cqw] text-(--w-search)'>search</span>
            </div>
            <hr className='border w-2/3' />
       
@@ -77,7 +81,8 @@ const TransactionList = ({ref, gridStyle, preview=false}) => {
                             onClick: () => toggleMenu('sort')
                         })}
                         
-                        className='leading-tight border rounded-2xl px-[3cqw] cursor-pointer'>sort</button>
+                        className='bg-(--w-buttons)
+                        leading-tight border rounded-2xl px-[3cqw] cursor-pointer'>sort</button>
 
                     { (openMenu === 'sort' || openMenu === 'sort-add')  &&
                         <SortMenu sort={sort} openMenu={openMenu} toggleMenu={toggleMenu} />    
@@ -131,10 +136,10 @@ const TransactionList = ({ref, gridStyle, preview=false}) => {
                                    <span>|</span>
                                    
                                    {totals?.income > 0 && (
-                                        <span className='text-[#A9B5A4]'>+{row.currency}{totals.income}</span>
+                                        <span className='text-(--w-text-amount-pos)/50'>+{row.currency}{totals.income}</span>
                                     )}
                                    {totals?.expense > 0 && (
-                                        <span className='text-[#B7A0A0]'>-{row.currency}{totals.expense}</span>
+                                        <span className='text-(--w-text-amount-neg)/50'>-{row.currency}{totals.expense}</span>
                                     )}
                                    
                                </div>

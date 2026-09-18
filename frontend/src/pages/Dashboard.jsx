@@ -6,9 +6,13 @@ import { DragDropProvider, DragOverlay, useDroppable } from '@dnd-kit/react'
 import { moveWidget } from '../utils/dashboard/movement'
 import WidgetLibrary from '../components/widget-library/WidgetLibrary'
 import LibraryItem from '../components/widget-library/LibraryItem'
+import { globalColors } from '../utils/colors/widgetColors'
+
+
 const maxColumns = 16
 
-const Dashboard = ({name='', widgetData}) => {
+
+const Dashboard = ({dashboard, onUpdateDashboard, widgetData}) => {
   const gridContainerRef = useRef(null)
   const gridAreaRef = useRef(null) // flexible wrapper that owns the available height
   const { cellSize, gapSize } = useCellSize(gridContainerRef, maxColumns)
@@ -128,9 +132,6 @@ const Dashboard = ({name='', widgetData}) => {
       const relY = py - offsetY - rect.top
       const gridX = Math.floor(relX / trackSize)+1
       const gridY = Math.floor(relY / trackSize)+1
-      console.log('relative to grid', relX, relY)
-      console.log('tracksize',trackSize)
-      console.log('grid', gridX, gridY)
 
 
       ghostWidgetRef.current = {
@@ -144,8 +145,6 @@ const Dashboard = ({name='', widgetData}) => {
       }
 
       ghostStartPos.current = {x: gridX, y: gridY}
-      
-      console.log('--------------')
 
       return
     }
@@ -260,7 +259,26 @@ const Dashboard = ({name='', widgetData}) => {
     dragStartPosition.current = null
   }
 
+  function deleteWidget(id) {
+    setWidgets(prev => prev.filter(w => 
+      w.id !== id))
+  }
+
+  //controls of a draggable widget. can be one open at a time
+  const [openControlsId, setOpenControlsId] = useState(null)
+
   const displayedWidgets = previewWidgets ?? widgets
+
+
+  //UI background color
+  const [previewBgColor, setPreviewBgColor] = useState(null)
+
+  const bgColor = previewBgColor ?? dashboard.settings.bgColor
+
+  function saveBgColor(color) {
+    onUpdateDashboard(dashboard.id, { settings: {...dashboard.settings, bgColor: color} })
+    setPreviewBgColor(null)
+  }
 
   return (
     <DragDropProvider
@@ -268,11 +286,15 @@ const Dashboard = ({name='', widgetData}) => {
           onDragMove={handleDragMove}
           onDragEnd={handleDragEnd}
           >
-<div className="bg-linear-to-b from-[#F6CECE] to-[#C7B5C6]">
+<div
+style={{backgroundColor: bgColor}}>
   {isLibraryOpen && <WidgetLibrary position={libraryPos} close={setIsLibraryOpen} isDraggingWidget={!!draggedLibraryWidget}/>}
       
   <div className="h-screen px-12 py-4 flex flex-col">
-    <Header title={name} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setIsLibraryOpen={setIsLibraryOpen}/>
+    <Header title={dashboard.name} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setIsLibraryOpen={setIsLibraryOpen} 
+    bgColor={bgColor} setPreviewBgColor={setPreviewBgColor}
+    onSaveBgColor={saveBgColor}
+    />
     <div ref={gridAreaRef} className="flex-1 min-h-0">
       <div
               ref={gridContainerRef}
@@ -296,8 +318,11 @@ const Dashboard = ({name='', widgetData}) => {
                 return (
                     <DraggableWidget key={widget.id} widget={widget} disabled={!isEditMode}
                 onSettingsChange={updateWidgetSettings} 
-                isEditMode={isEditMode}/>
-                  )        
+                isEditMode={isEditMode} onDeleteWidget={() => deleteWidget(widget.id)}
+                globalColors={globalColors}
+                openControlsId={openControlsId}
+                setOpenControlsId={setOpenControlsId}/>
+                  )  
 })}
             </div>
         </div>

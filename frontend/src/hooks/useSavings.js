@@ -1,7 +1,7 @@
-import { fakeSavings } from "../data/fakeData"
+import { fakeSavings, previewSavings } from "../data/fakeData"
 
-const useSavings = () => {
-    const goals = fakeSavings.filter(entry => entry.type === 'goal')
+const useSavings = (preview=false) => {
+    const goals = (preview ? previewSavings : fakeSavings).filter(entry => entry.type === 'goal')
     return { goals }
 }
 export default useSavings

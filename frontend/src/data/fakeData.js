@@ -170,3 +170,33 @@ export const fakeSavings = [
     created_at: '2026-03-30',
   },
 ]
+
+export const previewSavings = [
+  {
+    id: 1,
+    name: 'Vacation',
+    type: 'goal',
+    target_amount: 3000,
+    current_amount: 1850,
+    currency: '$',
+    deadline: '2027-06-01',
+  },
+  {
+    id: 2,
+    name: 'Savings',
+    type: 'saving',
+    target_amount: null,
+    current_amount: 2400,
+    currency: '$',
+    deadline: null,
+  },
+  {
+    id: 3,
+    name: 'New Laptop',
+    type: 'goal',
+    target_amount: 2000,
+    current_amount: 1250,
+    currency: '$',
+    deadline: '2027-02-15',
+  },
+]

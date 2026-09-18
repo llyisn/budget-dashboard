@@ -1,8 +1,11 @@
 import { FloatingPortal, useDismiss, useFloating, useInteractions } from '@floating-ui/react'
-import React from 'react'
+import React, { useContext } from 'react'
 import ChecklistItem from '../../checklist/ChecklistItem'
+import { ColorVarsContext } from '../../../../context/context'
 
 const FilterChip = ({filter, availableOptions, isOpen, onToggle, selectedOptions, onOptionToggle}) => {
+    const colorVars = useContext(ColorVarsContext)
+    
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: (open) => {
@@ -19,10 +22,11 @@ const FilterChip = ({filter, availableOptions, isOpen, onToggle, selectedOptions
   return (
     <>
         <button
+        style={colorVars}
         ref={refs.setReference} {...getReferenceProps({
             onClick: onToggle
         })}
-        className='rounded bg-[#D5CFAE] leading-tight px-2'
+        className='rounded bg-(--w-filters) leading-tight px-2'
         >
         {filter}
         </button>

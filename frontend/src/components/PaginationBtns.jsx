@@ -5,7 +5,10 @@ const PaginationBtns = ({numSize, pageCount, currentPageIndex, setCurrentPageInd
     const pageIndices = getPageIndices(currentPageIndex, pageCount)
 
   return (
-    <div className={`flex gap-4 justify-center text-[${numSize}cqw]`}>
+    <div className={`flex gap-4 justify-center`}
+    style={{
+        fontSize: `${numSize}cqw`
+    }}>
         <button className='w-6 cursor-pointer' onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex-1))}>
             &lt;
         </button>
@@ -13,7 +16,7 @@ const PaginationBtns = ({numSize, pageCount, currentPageIndex, setCurrentPageInd
         <div className='w-1/2 flex gap-4 justify-center mx-2'>
             { pageIndices.map((ind, index) => {
                 if (ind === 'ellipsis') {
-                        return <span key={index}>...</span>
+                        return <span className='cursor-none' key={index}>...</span>
                     }
                     return <button className={`cursor-pointer hover:text-purple-800 ${ind === currentPageIndex ? 'underline' : ''}`} key={index} onClick={() => setCurrentPageIndex(ind)}>
                         {ind+1}

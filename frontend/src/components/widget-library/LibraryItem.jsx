@@ -1,31 +1,12 @@
 import React from 'react'
-import StatWidget from '../widgets/stat/StatWidget'
-import BudgetWidget from '../widgets/budget/BudgetWidget'
-import TextWidget from '../widgets/TextWidget'
-import ChecklistWidget from '../widgets/checklist/ChecklistWidget'
-import TransactionsWidget from '../widgets/transactions/TransactionsWidget'
-import BudgetHistory from '../widgets/budget/BudgetHistory'
-import GoalWidget from '../widgets/goal/GoalWidget'
-import TopExpenses from '../widgets/TopExpenses'
-import StatOverview from '../widgets/stat/StatOverview'
-import TransactionList from '../widgets/transactions/transaction-list/TransactionList'
+import { widgetTypes } from '../../config/widgetTypes'
 import { useDraggable } from '@dnd-kit/react'
+import { globalColors, resolveWidgetColors } from '../../utils/colors/widgetColors'
+import { ColorVarsContext } from '../../context/context'
 
-//component map
-const widgetTypes = {
-  stat: StatWidget,
-  budget: BudgetWidget,
-  text: TextWidget,
-  checklist: ChecklistWidget,
-  transaction: TransactionsWidget,
-  budgetHistory: BudgetHistory,
-  goal: GoalWidget,
-  topExpenses: TopExpenses,
-  'stat overview': StatOverview,
-  'transactions list': TransactionList
-}
 
 const LibraryItem = ({id, type, settings, w, h, pixelSize}) => {
+
   const {ref} = useDraggable({
     id,
     data: {
@@ -42,9 +23,16 @@ const LibraryItem = ({id, type, settings, w, h, pixelSize}) => {
   const style = pixelSize ? { width: pixelSize.width, height: pixelSize.height} 
     : { width: `${w * 8}cqw`, height: `${h * 8}cqw`}
 
+  const resolvedColors = resolveWidgetColors(type, {}, globalColors)
+  const colorVars = Object.fromEntries(
+      Object.entries(resolvedColors).map(([key, color]) => [`--w-${key}`, color])
+     )
+
   return (
     <div ref={ref} style={style} >
-      <Component {...settings} gridStyle={{width: '100%', height: '100%'}} />
+      <ColorVarsContext.Provider value={colorVars}>
+        <Component {...settings} />
+      </ColorVarsContext.Provider>
     </div>
   )
 }

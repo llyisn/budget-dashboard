@@ -1,6 +1,9 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
+import { ColorVarsContext } from '../../context/context'
 
-const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode }) => {
+const TextWidget = ({ text = "", onSettingsChange, isEditMode }) => {
+  const colorVars = useContext(ColorVarsContext)
+  
   const [isEditing, setIsEditing] = useState(false)
   const editableRef = useRef(null)
   const clickPositionRef = useRef(null)
@@ -22,7 +25,6 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
     if (!isEditing || !editableRef.current) return
     
     const el = editableRef.current
-    console.log(el)
     el.focus()
     
 
@@ -67,7 +69,12 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
   }, [isEditing])
 
   return (
-    <div ref={ref} style={gridStyle} className='bg-(--widget-color) rounded-md overflow-hidden @container p-2 md:p-5 '>
+    <div 
+    style={colorVars}
+    className='bg-(--w-main)
+    border border-(--w-border)
+    text-(--w-text)
+    size-full rounded-md overflow-hidden @container p-2 md:p-5 '>
       {isEditing ? (
         <div
           ref={editableRef}
@@ -79,7 +86,9 @@ const TextWidget = ({ ref, gridStyle, text = "", onSettingsChange, isEditMode })
           {text}
         </div>
       ) : (
-        <div onClick={handleClick} className='min-h-full'>
+        <div onClick={handleClick} 
+        data-drag-ignore
+        className='min-h-full'>
           <p className='text-[12cqw]'>{text}</p>
         </div>
       )}

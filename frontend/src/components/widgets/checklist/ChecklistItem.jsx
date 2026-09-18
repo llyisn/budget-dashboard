@@ -7,7 +7,8 @@ const ChecklistItem = ({id, content, checked, onToggle,
   onRequestEdit,
   onCommit,
   onMergeUp,
-  onSplitItem
+  onSplitItem,
+  isLineThrough = true //line through items when checked or not
 }) => {
   const editableRef = useRef(null)
 
@@ -133,7 +134,9 @@ function handleClick(e) {
         <input onChange={() => onToggle(id)} checked={checked} className='sr-only peer' id={`todo-${id}`} type="checkbox" />
         
         
-        <label htmlFor={`todo-${id}`}
+        <label 
+        data-drag-ignore
+        htmlFor={`todo-${id}`}
                 className={`size-3 border border-gray-500 rounded-xs mr-2 cursor-pointer 
                 after:content-['✓']
                 after:text-xs
@@ -149,11 +152,13 @@ function handleClick(e) {
           suppressContentEditableWarning
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className={`flex-1 min-w-0 wrap-break-word outline-none ${checked ? 'line-through' : ''}`}>
+          className={`flex-1 min-w-0 wrap-break-word outline-none ${isLineThrough && checked ? 'line-through' : ''}`}>
             {content}
           </div>
         ) : (
-          <div className={`flex-1 min-w-0 wrap-break-word ${checked ? 'line-through' : ''}`} 
+          <div 
+          data-drag-ignore
+          className={`flex-1 min-w-0 wrap-break-word ${isLineThrough && checked ? 'line-through' : ''}`} 
           onClick={handleClick}
           >
             <p ref={textRef}>{content}</p>

@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import useTransactions from '../../../hooks/useTransactions'
 import { countStat } from '../../../utils/transactionsUtils'
+import { ColorVarsContext } from '../../../context/context'
 
-const BudgetWidget = ({ref, gridStyle, variant="", currency='$', max=0, preview=false}) => {
+const BudgetWidget = ({variant="", currency='$', max=0, preview=false}) => {
+  const colorVars = useContext(ColorVarsContext)
+
   const {transactions} = useTransactions(preview)
   const now = countStat(transactions, 'expense', 'month') + countStat(transactions, 'savings', 'month')
   
@@ -26,20 +29,19 @@ const BudgetWidget = ({ref, gridStyle, variant="", currency='$', max=0, preview=
     if (variant === 'inline')
   return (
     <div 
-    ref={ref}
-    style={gridStyle}
-    className='bg-(--widget-color) rounded-md
+    style={colorVars}
+    className='bg-(--w-main) size-full rounded-md
       @container-size
       flex flex-col'> 
         <div className='flex-1 flex justify-between items-center px-[8cqw] mb-[-10cqh]'>
-            <p className='text-[10cqw]'>budget</p>
-            <p className='text-[11cqw]'>{displayMoney}</p>
+            <p className='text-[10cqw] text-(--w-text-label)'>budget</p>
+            <p className='text-[11cqw] text-(--w-text-amount)'>{displayMoney}</p>
         </div>
 
         {/* progress bar */}
         <div className='h-1/4 w-full border-t rounded-b-md'>
             <div 
-            className={`bg-[#CEA3B8] w-(--value-ratio) h-full rounded-bl-md
+            className={`bg-(--w-bar) w-(--value-ratio) h-full rounded-bl-md
             ${valueRatio === 1 ? 'rounded-br-md' : ''}`}
 
             style={{'--value-ratio': `${valueRatio * 100}%`}}
