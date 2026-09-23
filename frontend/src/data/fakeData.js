@@ -59,6 +59,20 @@ export const fakeTransactions = [
      { id: 54, label: "out", type: "expense", amount: 740.03, currency: "$", date: "2026-09-04", category: "cafe", icon: "✈️" }
 
 ]
+//use filter rules has duplicated const (in diff format)
+export const fakeCategories = [
+  'food',
+      'transport',
+      'entertainment',
+      'housing',
+      'health',
+      'education',
+      'utilities',
+      'shopping',
+      'travel',
+      'gifts',
+      'cafe',
+]
 
 export const previewTransactions = [
   { id: 1, label: "purchase", type: "expense", amount: 24.50, currency: "$", date: "2026-09-05", category: "shopping", icon: "🛍️" },

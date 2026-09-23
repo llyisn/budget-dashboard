@@ -190,6 +190,17 @@ export const previewWidgets = {
         w: 4,
         h: 2
       }
+    ],
+
+    image: [
+      {
+        type: 'image',
+        settings: {
+          colors: {},
+        },
+        w: 3,
+        h: 3
+      }
     ]
     
 }

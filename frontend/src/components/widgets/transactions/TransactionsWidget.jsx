@@ -3,16 +3,20 @@ import useTransactions from '../../../hooks/useTransactions'
 import { getDailyTotals } from '../../../utils/utils'
 import TransactionRow from './transaction-list/TransactionRow'
 import { ColorVarsContext } from '../../../context/context'
+import { useTransactionContext } from '../../../context/TransactionsContext'
+import { previewTransactions } from '../../../data/fakeData'
 
-const TransactionsWidget = ({preview=false}) => {
+const TransactionsWidget = ({preview=false, setAddTxWidget}) => {
+  const { transactions: liveTransactions} = useTransactionContext()
+  const transactions = preview ? previewTransactions : liveTransactions
+
   const colorVars = useContext(ColorVarsContext)
 
-  const {transactions} = useTransactions(preview)
   //for displaying total sum of income/expense per day on date header
   const dailyTotals = useMemo(() => getDailyTotals(transactions), [transactions])
 
   //sort by date desc
-  const sortedTransactions = transactions.toSorted((a,b) => b.date.localeCompare(a.date))
+  const sortedTransactions = useMemo(() => transactions.toSorted((a,b) => b.date.localeCompare(a.date)), [transactions]) 
 
   return (
     <div 
@@ -24,7 +28,8 @@ const TransactionsWidget = ({preview=false}) => {
         {/* header */}
         <div className='text-(--w-text-title) px-[6cqw] pt-[4cqw] flex justify-between items-center'>
             <p className='text-[10cqw]'>transactions</p>
-            <p className='text-[9cqw]'>+</p>
+            <button onClick={() => {
+              setAddTxWidget(true)}} className='text-[9cqw] cursor-pointer'>+</button>
         </div>
         {/* transactions mapping */}
         <div className='flex-1 px-[6cqw] overflow-y-auto'>
@@ -43,10 +48,10 @@ const TransactionsWidget = ({preview=false}) => {
                           <span>|</span>
                                       
                           {totals?.income > 0 && (
-                            <span className='text-[#A9B5A4]'>+{row.currency}{totals.income}</span>
+                            <span className='text-[#A9B5A4]'>+{row.currency}{totals.income.toFixed(2)}</span>
                           )}
                           {totals?.expense > 0 && (
-                            <span className='text-[#B7A0A0]'>-{row.currency}{totals.expense}</span>
+                            <span className='text-[#B7A0A0]'>-{row.currency}{totals.expense.toFixed(2)}</span>
                           )}
                         </div>
                       }

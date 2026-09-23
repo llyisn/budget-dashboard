@@ -7,12 +7,20 @@ import { moveWidget } from '../utils/dashboard/movement'
 import WidgetLibrary from '../components/widget-library/WidgetLibrary'
 import LibraryItem from '../components/widget-library/LibraryItem'
 import { globalColors } from '../utils/colors/widgetColors'
+import AddTransactionModal from '../components/widgets/transactions/AddTransactionModal'
+import { createPortal } from 'react-dom'
+import { TransactionsProvider } from '../context/TransactionsContext'
+import { GridMetricsProvider } from '../context/GridMetricsContext'
+import { BudgetProvider } from '../context/BudgetContext'
 
 
 const maxColumns = 16
 
 
+
+
 const Dashboard = ({dashboard, onUpdateDashboard, widgetData}) => {
+
   const gridContainerRef = useRef(null)
   const gridAreaRef = useRef(null) // flexible wrapper that owns the available height
   const { cellSize, gapSize } = useCellSize(gridContainerRef, maxColumns)
@@ -66,12 +74,12 @@ const Dashboard = ({dashboard, onUpdateDashboard, widgetData}) => {
         target.isContentEditable
       ) return
 
-      if (e.key.toLowerCase() === 'e')  {
+      if (e.code === "KeyE")  {
         setIsEditMode(prev => !prev)
         setIsLibraryOpen(false)
         return
       }
-      if(e.key.toLowerCase() === 'w' && isEditMode) setIsLibraryOpen(prev => !prev)
+      if(e.code === "KeyW" && isEditMode) setIsLibraryOpen(prev => !prev)
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -275,13 +283,19 @@ const Dashboard = ({dashboard, onUpdateDashboard, widgetData}) => {
 
   const bgColor = previewBgColor ?? dashboard.settings.bgColor
 
+  //add new transaction entry
+  const [addTxWidget, setAddTxWidget] = useState(null)
+
   function saveBgColor(color) {
     onUpdateDashboard(dashboard.id, { settings: {...dashboard.settings, bgColor: color} })
     setPreviewBgColor(null)
   }
 
   return (
-    <DragDropProvider
+    <TransactionsProvider>
+      <GridMetricsProvider cellSize={cellSize} gapSize={gapSize}>
+        <BudgetProvider>
+        <DragDropProvider
           onDragStart={handleDragStart}
           onDragMove={handleDragMove}
           onDragEnd={handleDragEnd}
@@ -321,7 +335,11 @@ style={{backgroundColor: bgColor}}>
                 isEditMode={isEditMode} onDeleteWidget={() => deleteWidget(widget.id)}
                 globalColors={globalColors}
                 openControlsId={openControlsId}
-                setOpenControlsId={setOpenControlsId}/>
+                setOpenControlsId={setOpenControlsId}
+                setAddTxWidget={setAddTxWidget} //for transaction widgets
+                />
+                  
+                  
                   )  
 })}
             </div>
@@ -334,9 +352,20 @@ style={{backgroundColor: bgColor}}>
       <LibraryItem type={draggedLibraryWidget.type} settings={draggedLibraryWidget.settings} w={draggedLibraryWidget.w} h={draggedLibraryWidget.h} pixelSize={{width: draggedLibraryWidget.w*cellSize + (draggedLibraryWidget.w-1)*gapSize, height: draggedLibraryWidget.h*cellSize + (draggedLibraryWidget.h-1)*gapSize }} />
     </DragOverlay>
     )}
+
+    {addTxWidget && createPortal(
+      <AddTransactionModal 
+      
+      onCancel={() => setAddTxWidget(false)}
+      setAddTxWidget={setAddTxWidget}
+      />, document.body
+    )}
     
+    </DragDropProvider>
+    </BudgetProvider>
+      </GridMetricsProvider>
+    </TransactionsProvider>
     
-          </DragDropProvider>
     
   )
 }

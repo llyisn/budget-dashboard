@@ -87,7 +87,7 @@ export function getDailyTotals(transactions) {
     transactions.forEach(row => {
         const group = groups.get(row.date) ?? { income: 0, expense: 0 }
             
-        group[row.type] += row.amount
+        group[row.type] += Number(row.amount)
         groups.set(row.date, group)
     })
 

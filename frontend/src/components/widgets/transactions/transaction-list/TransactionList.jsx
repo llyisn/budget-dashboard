@@ -1,6 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react'
 import { Search, CalendarFold } from 'lucide-react'
-import useTransactions from '../../../../hooks/useTransactions'
 import TransactionRow from './TransactionRow'
 import { getDailyTotals } from '../../../../utils/utils'
 import useSortRules from '../../../../hooks/useSortRules'
@@ -10,12 +9,15 @@ import PaginationBtns from '../../../PaginationBtns'
 import SortMenu from './SortMenu'
 import FilterMenu from './FilterMenu'
 import { ColorVarsContext } from '../../../../context/context'
+import { useTransactionContext } from '../../../../context/TransactionsContext'
+import { previewTransactions } from '../../../../data/fakeData'
 
-const TransactionList = ({preview=false}) => {
+const TransactionList = ({preview=false,setAddTxWidget}) => {
     const colorVars = useContext(ColorVarsContext)
     
    // DATA
-   const  { transactions } = useTransactions(preview)
+   const { transactions: liveTransactions} = useTransactionContext()
+   const transactions = preview ? previewTransactions : liveTransactions
 
    //for displaying total sum of income/expense per day on date header
    const dailyTotals = useMemo(() => getDailyTotals(transactions), [transactions])
@@ -57,9 +59,10 @@ const TransactionList = ({preview=false}) => {
            {/* header */}
            <div className='flex justify-between items-center mb-2'>
                <h1 className='text-[7cqw] text-(--w-title)'>transactions</h1>
-               {/* btn */}
+               {/* add tx */}
                <button className='bg-(--w-buttons)
-               text-[4cqw] leading-tight border rounded-2xl px-[4cqw] pt-0.5 cursor-pointer'>+ add</button> 
+               text-[4cqw] leading-tight border rounded-2xl px-[4cqw] pt-0.5 cursor-pointer'
+               onClick={() => { setAddTxWidget(true)}}>+ add</button> 
            </div>
 
 
@@ -136,10 +139,10 @@ const TransactionList = ({preview=false}) => {
                                    <span>|</span>
                                    
                                    {totals?.income > 0 && (
-                                        <span className='text-(--w-text-amount-pos)/50'>+{row.currency}{totals.income}</span>
+                                        <span className='text-(--w-text-amount-pos)/50'>+{row.currency}{totals.income.toFixed(2)}</span>
                                     )}
                                    {totals?.expense > 0 && (
-                                        <span className='text-(--w-text-amount-neg)/50'>-{row.currency}{totals.expense}</span>
+                                        <span className='text-(--w-text-amount-neg)/50'>-{row.currency}{totals.expense.toFixed(2)}</span>
                                     )}
                                    
                                </div>

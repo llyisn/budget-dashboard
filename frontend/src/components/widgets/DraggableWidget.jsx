@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {useDraggable} from '@dnd-kit/react';
 import {motion} from 'motion/react'
-import { PaintbrushVertical } from 'lucide-react';
+import { PaintbrushVertical, Image } from 'lucide-react';
 import { widgetColorSchemas } from '../../config/widgetColorSchemas';
 import { ColorVarsContext } from '../../context/context';
 import { widgetTypes } from '../../config/widgetTypes';
@@ -18,7 +18,10 @@ function handleContentPointerDownCapture(e) {
   if (e.target.closest(DRAG_IGNORE_SELECTOR)) e.stopPropagation()
 }
 
-const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDeleteWidget, globalColors, openControlsId, setOpenControlsId}) => {
+const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDeleteWidget, globalColors, openControlsId, setOpenControlsId,
+
+  setAddTxWidget
+}) => {
     const { ref, handleRef, isDragging } = useDraggable({id: widget.id, data: widget, disabled})
     const Component = widgetTypes[widget.type]
     
@@ -115,6 +118,8 @@ const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDele
    ), [displayedColors]) 
     
  
+  //  for ImageWidget
+  const imgWidgetRef = useRef(null)
    
 
   return (
@@ -136,21 +141,25 @@ const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDele
       className={`size-full`}>
           <ColorVarsContext.Provider value={colorVars}>
             <Component
+            {...(widget.type === 'image' ? { ref: imgWidgetRef, widgetId: widget.id } : {})} // for ImageWidget
           {...widget.settings} 
           onSettingsChange={handleChange}
-          isEditMode={isEditMode} />
+          isEditMode={isEditMode}
+          setAddTxWidget={setAddTxWidget} />
           </ColorVarsContext.Provider>
           
       </div>
 
     {showRail && (
       <div ref={railRef} >
+        {/* DELETE BTN */}
         <button
         onClick={onDeleteWidget}
         className='absolute top-0 -right-8 z-40 border bg-(--widget-color) rounded-xs leading-none px-1 py-px
         cursor-pointer text-[1.5rem]'>
         ×
         </button>
+        {/* COLOR SETTINGS BTN */}
         <button 
         onClick={togglePanel}
         className='absolute top-8 -right-8 z-40 border bg-(--widget-color) rounded-xs leading-none p-0.75
@@ -170,6 +179,17 @@ const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDele
           saveColor={saveColor}
           
           />
+        )}
+
+        {/* FOR IMG: change image */}
+        {widget.type === 'image' && (
+          <button
+        onClick={() => {
+          imgWidgetRef.current?.changeImage()}}
+        className='absolute top-16 -right-8 z-40 border bg-(--widget-color) rounded-xs leading-none p-0.75
+        cursor-pointer'>
+          <Image size={16} />
+        </button>
         )}
       </div>
     )}

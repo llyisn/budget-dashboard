@@ -3,13 +3,23 @@ import { useMemo, useState } from "react"
 
 //example data
 const FILTER_PROPERTIES = {
-    type: ['income', 'expense', 'savings'],
-    category: {
-        income: ['salary', 'freelance', 'sponsors'],
-        expense: ['takeout', 'gift', 'family', 'travel', 'coffee', 'museum', 'groceries'],
-        savings: ['emergency fund', 'HYCA', 'medical', 'house'],
-        
-    },
+  type: ['income', 'expense'],
+  category: {
+    income: ['salary', 'freelance'],
+    expense: [
+      'food',
+      'transport',
+      'entertainment',
+      'housing',
+      'health',
+      'education',
+      'utilities',
+      'shopping',
+      'travel',
+      'gifts',
+      'cafe',
+    ],
+  },
 }
 
 const useFilterRules = (transactions, openMenu, setOpenMenu, toggleMenu) => {

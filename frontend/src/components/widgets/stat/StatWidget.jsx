@@ -19,6 +19,7 @@ const StatWidget = ({variant="", label="", currency="$", preview=false}) => {
    style={colorVars}
     className='bg-(--w-main) size-full rounded-md
     @container
+    border border-(--w-border)
     flex flex-col justify-center
     gap-1
     '>

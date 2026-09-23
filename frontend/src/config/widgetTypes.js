@@ -8,7 +8,7 @@ import TextWidget from "../components/widgets/TextWidget";
 import TopExpenses from "../components/widgets/TopExpenses";
 import TransactionList from "../components/widgets/transactions/transaction-list/TransactionList";
 import TransactionsWidget from "../components/widgets/transactions/TransactionsWidget";
-
+import ImageWidget from "../components/widgets/ImageWidget"
 //component map
 export const widgetTypes = {
   stat: StatWidget,
@@ -16,9 +16,9 @@ export const widgetTypes = {
   text: TextWidget,
   checklist: ChecklistWidget,
   transaction: TransactionsWidget,
-  budgetHistory: BudgetHistory,
   goal: GoalWidget,
   'top expenses': TopExpenses,
   'stat overview': StatOverview,
-  'transactions list': TransactionList
+  'transactions list': TransactionList,
+  image: ImageWidget
 }
