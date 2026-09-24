@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { ColorVarsContext } from '../../../../context/context'
 
-const TransactionRow = ({row, detailed=false}) => {
+const TransactionRow = ({row, detailed=false, onClick}) => {
   const colorVars = useContext(ColorVarsContext)
 
     const isExpense = row.type === 'expense'
@@ -12,7 +12,8 @@ const TransactionRow = ({row, detailed=false}) => {
 style={colorVars}
 className='flex justify-between bg-(--w-transaction-row-bg) 
 border border-(--w-transaction-border)
-px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'>
+px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'
+onClick={onClick}>
       <div className='flex items-center'>
           <p className='text-[5cqw]'>{row.icon}</p>
           <p className='text-(--w-text-label) pl-[3cqw]'>{row.label}</p>
@@ -23,10 +24,12 @@ px-[4cqw] py-[2cqw] rounded-xs text-[6cqw] mb-[2cqw]'>
       )
     }
 
-//detailed ver with tags for transactions list
+//detailed ver with tags for transactions list.
+//todo colorvars
   return (
     <div className='bg-(--w-transaction-row-bg) 
-border border-(--w-transaction-border) grid grid-cols-[1fr_auto_auto] p-[2cqw] mb-1.5'>
+border border-(--w-transaction-border) grid grid-cols-[1fr_auto_auto] p-[2cqw] mb-1.5'
+onClick={onClick}>
             <div className='flex gap-2 text-[4cqw]'>
                 <span>{row.icon}</span>
                 <span className='text-(--w-text-label)'>{row.label}</span>

@@ -3,28 +3,32 @@ import { motion } from 'motion/react'
 import EmojiSelector from '../EmojiSelector'
 import { useTransactionContext } from '../../../context/TransactionsContext'
 import { useGridMetrics } from '../../../context/GridMetricsContext'
+import { Trash } from 'lucide-react'
 
 const CURRENCY = '$'
 const WIDTH = 4
 const HEIGHT = 5
 
-const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
-  const {addTransaction} = useTransactionContext()
+
+
+//todo: search for type and category (filtered on type) -- select existing or create new. assign color
+const TransactionModal = ({transaction, onCancel}) => {
+  const {addTransaction, updateTransaction, deleteTransaction} = useTransactionContext()
 //transaction: id, type, amount, currency, description, date, user_id, saving_id, category_id
  //{ id: 1, label: "pizza", type: "expense", amount: 49.99, currency: "$", date: "2026-09-01", category: "food", icon: "🍕" },
   const { getPixelSize } = useGridMetrics()
   const style = getPixelSize(WIDTH, HEIGHT)
 
-  const [type, setType] = useState('')
-  const [date, setDate] = useState(new Date())
+  const [type, setType] = useState(transaction?.type ?? '')
+  const [date, setDate] = useState(transaction ? parseTransactionDate(transaction.date) : new Date())
   const [openEmojiSelector, setOpenEmojiSelector] = useState(false)
-  const [icon, setIcon] = useState('🍎')
+  const [icon, setIcon] = useState(transaction?.icon ?? '🍎')
 
   const dataRef = useRef({
-    name: '',
-    amount: '',
-    category: '',
-    notes: ''
+    name: transaction?.label ?? '',
+    amount: transaction?.amount.toString() ?? '',
+    category: transaction?.category ?? '',
+    notes: transaction?.description ?? ''
   })
 
   const [errors, setErrors] = useState({})
@@ -36,7 +40,7 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
     })
   }
 
-  function handleAddTx() {
+  function handleSave() {
     const amount = Number(dataRef.current.amount)
     const newErrors = {}
     // rules
@@ -47,10 +51,7 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
     setErrors(newErrors)
     if (Object.keys(newErrors).length > 0) return false
 
-
-
-    const transaction = {
-      id: crypto.randomUUID(),
+    const changes = {
       type,
       amount,
       currency: CURRENCY,
@@ -61,12 +62,17 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
       label: dataRef.current.name
     }
 
-    addTransaction(transaction)
-
+    if (transaction) {
+      updateTransaction(transaction.id, changes)
+    } else {
+      //new
+      addTransaction({
+        id: crypto.randomUUID(),
+        ...changes
+      })
+    }
     return true
   }
-
-
 
   function handleChange(field, value) {
     dataRef.current[field] = value
@@ -83,13 +89,20 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
       drag
       dragMomentum={false}>
         <div className='flex justify-between px-2 text-2xl'>
-          {/* CANCEL */}
-          <button onClick={onCancel} className='cursor-pointer'>×</button>
+          {/* CANCEL & DELETE */}
+          <div className='flex gap-2 items-center'>
+            <button onClick={onCancel} className='cursor-pointer translate-y-0.5'>×</button>
+            <Trash size={16} className='cursor-pointer' onClick={() => {
+              deleteTransaction(transaction.id)
+              onCancel()
+              }}/>
+          </div>
+          
           
           {/* SAVE */}
-          <button className='cursor-pointer' onClick={() => {
-            if (handleAddTx()) {
-              setAddTxWidget(false)
+          <button className='cursor-pointer text-xl' onClick={() => {
+            if (handleSave()) {
+              onCancel()
             }
           }}>✓</button>
         </div>
@@ -121,7 +134,8 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
             <input type="text" className=' outline-none w-30' onChange={e => {
               handleChange('amount', e.target.value)
               clearError('amount')
-              }}/>
+              }}
+              defaultValue={dataRef.current.amount}/>
 
             
           </div>
@@ -136,7 +150,8 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
             <label>name:</label>
             <input type="text" className=' outline-none h-5' onChange={e => {
               handleChange('name', e.target.value)
-              }} />
+              }} 
+              defaultValue={dataRef.current.name}/>
           </div>
           <hr className='my-1' />
 
@@ -147,14 +162,16 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
               setType(e.target.value)
               clearError('type')
               }} 
-              placeholder={errors.type ?? ''}/>
+              placeholder={errors.type ?? ''}
+              defaultValue={type}/>
           </div>
           <hr className='my-1' />
         
           {/* CATEGORY FIELD */}
           <div className='flex items-center gap-3'>
             <label>category:</label>
-            <input type="text" className=' outline-none h-5' onChange={e => handleChange('category', e.target.value)} />
+            <input type="text" className=' outline-none h-5' onChange={e => handleChange('category', e.target.value)}
+            defaultValue={dataRef.current.category} />
           </div>
           <hr className='my-1' />
           
@@ -168,7 +185,8 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
           {/* NOTES FIELD */}
           <div className='flex items-base gap-3'>
             <label>notes:</label>
-            <textarea className='outline-none resize-none h-35' onChange={e => handleChange('notes', e.target.value)} />
+            <textarea className='outline-none resize-none h-35' onChange={e => handleChange('notes', e.target.value)}
+            defaultValue={dataRef.current.notes} />
           </div>
           
         </div>
@@ -177,7 +195,7 @@ const AddTransactionModal = ({onCancel, setAddTxWidget}) => {
   )
 }
 
-export default AddTransactionModal
+export default TransactionModal
 
 function formatDate(date) {
   const day = String(date.getDate()).padStart(2, '0')
@@ -193,4 +211,10 @@ function toDateInputValue(date) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function parseTransactionDate(dateString) {
+  const [year, month, day] = dateString.split('-').map(Number)
+
+  return new Date(year, month - 1, day)
 }

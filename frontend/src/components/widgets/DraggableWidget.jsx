@@ -20,7 +20,7 @@ function handleContentPointerDownCapture(e) {
 
 const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDeleteWidget, globalColors, openControlsId, setOpenControlsId,
 
-  setAddTxWidget
+  setAddTxWidget, setTransactionModal
 }) => {
     const { ref, handleRef, isDragging } = useDraggable({id: widget.id, data: widget, disabled})
     const Component = widgetTypes[widget.type]
@@ -106,7 +106,7 @@ const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDele
       setActiveColorKey(null)
     }
 
-    const showRail = isHoverOpen || isPanelOpen
+    const showRail = isEditMode && (isHoverOpen || isPanelOpen)
     const colorSlots = widgetColorSchemas[widget.type] ?? []
 
     const resolvedColors = useMemo(() => resolveWidgetColors(widget.type, widget.settings.colors, globalColors), [widget.type, widget.settings.colors, globalColors]) 
@@ -142,6 +142,8 @@ const DraggableWidget = ({widget, disabled, onSettingsChange, isEditMode, onDele
           <ColorVarsContext.Provider value={colorVars}>
             <Component
             {...(widget.type === 'image' ? { ref: imgWidgetRef, widgetId: widget.id } : {})} // for ImageWidget
+
+            {...(widget.type === 'transactions list' ? {setTransactionModal} : {}) }
           {...widget.settings} 
           onSettingsChange={handleChange}
           isEditMode={isEditMode}

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useGridMetrics } from '../../../context/GridMetricsContext'
 import { useTransactionContext } from '../../../context/TransactionsContext'
 import { countStat, filteredTransactions } from '../../../utils/transactionsUtils'
@@ -6,6 +6,7 @@ import TransactionRow from '../transactions/transaction-list/TransactionRow'
 import EmojiSelector from '../EmojiSelector'
 import CategoryMenu from './CategoryMenu'
 import { useBudgetContext } from '../../../context/BudgetContext'
+import { useClickOutside } from '../../../hooks/useClickOutside'
 
 const HEIGHT = 5
 const WIDTH = 4
@@ -21,7 +22,7 @@ function validateBudget(budget) {
   return errors
 }
 
-const BudgetSettings = ({selectedBudgetId, onSelectBudget}) => {
+const BudgetSettings = ({selectedBudgetId, onSelectBudget, onClose}) => {
   //UI
   const { getPixelSize } = useGridMetrics()
   const style = getPixelSize(WIDTH, HEIGHT)
@@ -126,11 +127,15 @@ const BudgetSettings = ({selectedBudgetId, onSelectBudget}) => {
 
   //changes are saved when user switches their focus on another budget (or on other thing)
     function switchBudget(nextId) {
-
     if (nextId === editBudgetId) return
 
     if (editBudgetId === '__new__') finishNewBudget()
     else if (editBudgetId) finishExistingBudget(editBudgetId)
+
+    if (nextId === null) {
+      setEditBudgetId(null)
+      return
+    }
 
     //new budget
     if (nextId === '__new__') {
@@ -145,7 +150,7 @@ const BudgetSettings = ({selectedBudgetId, onSelectBudget}) => {
         })
       }
       setEditBudgetId('__new__')
-      return
+      return 
     }
 
     // existing budget
@@ -278,10 +283,19 @@ function deleteCategory(budgetId, cat) {
     return filteredTransactions(sortedTransactions, {category: budget.categories}, budget.period)
   }, [sortedTransactions, showTranId, budgets, drafts])
 
+  const settingsRef = useRef(null)
+  useClickOutside(settingsRef, () => {
+      if (editBudgetId) {
+        switchBudget(null)
+        return
+      }
+      onClose()
+    }, true)
   
   
   return (
     <div
+    ref={settingsRef}
     style={{...style,
       top: getPixelSize(1, 1) 
     }}

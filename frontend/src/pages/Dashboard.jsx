@@ -7,7 +7,7 @@ import { moveWidget } from '../utils/dashboard/movement'
 import WidgetLibrary from '../components/widget-library/WidgetLibrary'
 import LibraryItem from '../components/widget-library/LibraryItem'
 import { globalColors } from '../utils/colors/widgetColors'
-import AddTransactionModal from '../components/widgets/transactions/AddTransactionModal'
+import TransactionModal from '../components/widgets/transactions/TransactionModal'
 import { createPortal } from 'react-dom'
 import { TransactionsProvider } from '../context/TransactionsContext'
 import { GridMetricsProvider } from '../context/GridMetricsContext'
@@ -87,8 +87,6 @@ const Dashboard = ({dashboard, onUpdateDashboard, widgetData}) => {
   }, [isEditMode])
 
   const [draggedLibraryWidget, setDraggedLibraryWidget] = useState(null)  
-
-  //const [libraryDragPhase, setLibraryDragPhase] = useState('idle') //idle = nothing is dragged; floating = picked up form library, follows cursor, not over grid yet; docking = part of grid system
 
   const ghostWidgetRef = useRef(null)
   const ghostStartPos = useRef({x: 0, y: 0})
@@ -285,6 +283,7 @@ const Dashboard = ({dashboard, onUpdateDashboard, widgetData}) => {
 
   //add new transaction entry
   const [addTxWidget, setAddTxWidget] = useState(null)
+  const [transactionModal, setTransactionModal] = useState(null) //null=closed, {mode: 'add', transaction: null}, {mode: 'edit', transaction: row},
 
   function saveBgColor(color) {
     onUpdateDashboard(dashboard.id, { settings: {...dashboard.settings, bgColor: color} })
@@ -337,6 +336,7 @@ style={{backgroundColor: bgColor}}>
                 openControlsId={openControlsId}
                 setOpenControlsId={setOpenControlsId}
                 setAddTxWidget={setAddTxWidget} //for transaction widgets
+                setTransactionModal={setTransactionModal} // for transaction widgets
                 />
                   
                   
@@ -353,11 +353,10 @@ style={{backgroundColor: bgColor}}>
     </DragOverlay>
     )}
 
-    {addTxWidget && createPortal(
-      <AddTransactionModal 
-      
-      onCancel={() => setAddTxWidget(false)}
-      setAddTxWidget={setAddTxWidget}
+    {transactionModal && createPortal(
+      <TransactionModal 
+      transaction={transactionModal.transaction}
+      onCancel={() => setTransactionModal(null)}
       />, document.body
     )}
     

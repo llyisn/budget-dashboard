@@ -2,6 +2,7 @@ import { autoUpdate, useFloating } from '@floating-ui/react'
 import React, { useState } from 'react'
 import { fakeCategories } from '../../../data/fakeData'
 
+// todo: add "all expense" option (= all categories)
 const CategoryMenu = ({categories, onAdd, onDelete, categoryChosen, open, onOpen, error}) => {
     const {refs, floatingStyles} = useFloating({
     whileElementsMounted: autoUpdate,

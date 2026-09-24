@@ -5,16 +5,21 @@ const useTransactions = (preview=false) => {
     const [transactions, setTransactions] = useState(preview ? previewTransactions : fakeTransactions)
 
     function addTransaction(newTransaction) {
-        const updatedTransactions = [...transactions, newTransaction]
-        setTransactions(updatedTransactions)
+        setTransactions(prev => [...prev, newTransaction])
     }
 
     function deleteTransaction(id) {
-        const updatedTransactions = transactions.filter(tr => tr.id !== id)
-        setTransactions(updatedTransactions)
+        setTransactions(prev => prev.filter(tr => tr.id !== id))
     }
 
-    return { transactions, addTransaction, deleteTransaction }
+    function updateTransaction(id, changes) {
+        setTransactions(prev => prev.map(tr =>
+            tr.id === id ? 
+            {...tr, ...changes} : tr
+        ))
+    }
+
+    return { transactions, addTransaction, deleteTransaction, updateTransaction}
 }
 
 export default useTransactions

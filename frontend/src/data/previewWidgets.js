@@ -132,7 +132,7 @@ export const previewWidgets = {
                 preview: true,
                 max: 1000
             },
-            w: 3,
+            w: 4,
             h: 1
         }
     ],

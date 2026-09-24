@@ -1,15 +1,18 @@
 import React, { useContext, useRef, useState } from 'react'
-import useTransactions from '../../../hooks/useTransactions'
 import { countStat } from '../../../utils/transactionsUtils'
 import { ColorVarsContext } from '../../../context/context'
 import BudgetSettings from './BudgetSettings'
 import { useBudgetContext } from '../../../context/BudgetContext'
-import { useClickOutside } from '../../../hooks/useClickOutside'
+import { useTransactionContext } from '../../../context/TransactionsContext'
+import { previewTransactions } from '../../../data/fakeData'
 
 const BudgetWidget = ({variant="", currency='$', preview=false, selectedBudgetId, onSettingsChange}) => {
   const colorVars = useContext(ColorVarsContext)
 
-  const {transactions} = useTransactions(preview)
+  //DATA
+  const {transactions: liveTransactions} = useTransactionContext()
+  const transactions = preview ? previewTransactions : liveTransactions
+
   const {budgets} = useBudgetContext()
   const selectedBudget = budgets.find(b => b.id === selectedBudgetId)
 
@@ -38,10 +41,8 @@ const BudgetWidget = ({variant="", currency='$', preview=false, selectedBudgetId
 
     // budget settings
     const [settings, setSettings] = useState(false)
-    const settingsRef = useRef(null)
-    useClickOutside(settingsRef, () => setSettings(false), settings)
 
-   //3x1
+   //4x1
     if (!selectedBudget) {
       return (
         <>
@@ -60,12 +61,11 @@ const BudgetWidget = ({variant="", currency='$', preview=false, selectedBudgetId
         </div>
 
         {/* progress bar */}
-        <div className='h-1/4 w-full border-t rounded-b-md'/>
+        <div className='h-1/5 w-full border-t rounded-b-md'/>
     </div>
         {settings && (
-          <div ref={settingsRef}>
-            <BudgetSettings selectedBudgetId={selectedBudgetId} onSelectBudget={id => onSettingsChange({selectedBudgetId: id})} />
-          </div>
+            <BudgetSettings selectedBudgetId={selectedBudgetId} onSelectBudget={id => onSettingsChange({selectedBudgetId: id})}
+            onClose={() => setSettings(false)} />
         )}
         </>
 
@@ -84,14 +84,14 @@ const BudgetWidget = ({variant="", currency='$', preview=false, selectedBudgetId
       relative'
     onClick={() => setSettings(prev => !prev)}
       > 
-        <div className='flex-1 flex justify-between items-center px-[8cqw] mb-[-10cqh]'>
-            <span className='text-[9cqw]'>{selectedBudget.icon}</span>
-            <p className='text-[10cqw] text-(--w-text-label)'>{selectedBudget.name}</p>
-            <p className='text-[11cqw] text-(--w-text-amount)'>{displayMoney}</p>
+        <div className='flex-1 flex justify-between items-center px-[4cqw] mb-[-10cqh]'>
+            {/* <span className='text-[7cqw]'>{selectedBudget.icon}</span> */}
+            <p className='text-[8cqw] text-(--w-text-label)'>{selectedBudget.icon} {selectedBudget.name}</p>
+            <p className='text-[8.5cqw] text-(--w-text-amount)'>{displayMoney}</p>
         </div>
 
         {/* progress bar */}
-        <div className='h-1/4 w-full border-t rounded-b-md'>
+        <div className='h-1/5 w-full border-t rounded-b-md'>
             <div 
             className={`bg-(--w-bar) w-(--value-ratio) h-full rounded-bl-md
             ${valueRatio === 1 ? 'rounded-br-md' : ''}`}
@@ -104,9 +104,8 @@ const BudgetWidget = ({variant="", currency='$', preview=false, selectedBudgetId
     </div>
 
     {settings && (
-          <div ref={settingsRef}>
-            <BudgetSettings selectedBudgetId={selectedBudgetId} onSelectBudget={id => onSettingsChange({selectedBudgetId: id})} />
-          </div>
+            <BudgetSettings selectedBudgetId={selectedBudgetId} onSelectBudget={id => onSettingsChange({selectedBudgetId: id})}
+            onClose={() => setSettings(false)}  />
         )}
     </>
     

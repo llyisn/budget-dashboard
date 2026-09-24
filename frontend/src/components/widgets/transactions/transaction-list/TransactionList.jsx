@@ -12,7 +12,7 @@ import { ColorVarsContext } from '../../../../context/context'
 import { useTransactionContext } from '../../../../context/TransactionsContext'
 import { previewTransactions } from '../../../../data/fakeData'
 
-const TransactionList = ({preview=false,setAddTxWidget}) => {
+const TransactionList = ({preview=false, setTransactionModal}) => {
     const colorVars = useContext(ColorVarsContext)
     
    // DATA
@@ -62,7 +62,10 @@ const TransactionList = ({preview=false,setAddTxWidget}) => {
                {/* add tx */}
                <button className='bg-(--w-buttons)
                text-[4cqw] leading-tight border rounded-2xl px-[4cqw] pt-0.5 cursor-pointer'
-               onClick={() => { setAddTxWidget(true)}}>+ add</button> 
+               onClick={() => { setTransactionModal({
+                mode: 'add',
+                transaction: null
+               })}}>+ add</button> 
            </div>
 
 
@@ -148,7 +151,11 @@ const TransactionList = ({preview=false,setAddTxWidget}) => {
                                </div>
                             }
                             
-                            <TransactionRow row={row} detailed={true} />
+                            <TransactionRow row={row} detailed={true}
+                            onClick={() => setTransactionModal({
+                                mode: 'edit',
+                                transaction: row
+                            })} />
                        </div>  
                    )
                 })

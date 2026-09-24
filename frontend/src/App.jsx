@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard'
 
 const dashboardWidgets = [
    //{ id: 1, type: 'stat', w: 3, h: 1, x: 1, y: 1, settings: { variant: 'inline', label: 'income', colors: {}} },
-   { id: 2, type: 'budget', w: 3, h: 1, x: 1, y: 2, settings: { variant: 'inline', max: 7000, colors: {} } },
+   { id: 2, type: 'budget', w: 4, h: 1, x: 1, y: 2, settings: { variant: 'inline', max: 7000, colors: {} } },
    //{ id: 3, type: 'text', w: 3, h: 2, x: 4, y: 1, settings: { text: 'ugly consistency beats pretty perfection', colors: {} } },
  //{ id: 4, type: 'checklist', w: 2, h: 2, x: 1, y: 3, settings: { data: [
   //  { id: 1, content: 'order tv', checked: true },
